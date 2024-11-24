@@ -1,8 +1,11 @@
+using MVCBudget.Service;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
+string connectionString = builder.Configuration.GetConnectionString("MyDatabaseConnection");
+MYSQLAccess.SetConnectionString(connectionString);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

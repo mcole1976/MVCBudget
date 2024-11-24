@@ -1,10 +1,19 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MVCBudget.Models;
+using MVCBudget.Service;
 
 namespace MVCBudget.Controllers
-{
+{ 
+  
     public class EntryController : Controller
     {
+
+        private readonly Service.Service _entryService; 
+       // public EntryController(Service.Service entryService) { _entryService = entryService; }
+
+
+
         // GET: EntryController1
         public ActionResult Index()
         {
@@ -26,16 +35,23 @@ namespace MVCBudget.Controllers
         // POST: EntryController1/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(Entry model, IFormCollection collection)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+
+                if (ModelState.IsValid) 
+                { var entry = new Entry 
+                { Description = model.Description, Amount = model.Amount, };
+                    Service.MYSQLAccess.InsertEntryWithIntermediate(entry);
+               }
+
             }
             catch
             {
                 return View();
             }
+            return View();
         }
 
         // GET: EntryController1/Edit/5

@@ -1,8 +1,46 @@
 ﻿@model MVCBudget.Models.Ledger
 
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-<h1>Ledger</h1>
 @{
+    ViewData["Title"] = "View";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>View</h1>
+
+<h4>Ledger</h4>
+<hr />
+@using (Html.BeginForm("Create", "Ledger", FormMethod.Post))
+{
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="Index">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Year" class="control-label"></label>
+                    <input asp-for="Year" class="form-control" />
+                    <span asp-validation-for="Year" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Month" class="control-label"></label>
+                    <input asp-for="Month" class="form-control" />
+                    <span asp-validation-for="Month" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Periaod" class="control-label"></label>
+                    <input asp-for="Periaod" class="form-control" />
+                    <span asp-validation-for="Periaod" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+}
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
