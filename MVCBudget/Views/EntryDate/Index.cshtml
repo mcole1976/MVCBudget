@@ -1,0 +1,42 @@
+﻿@model MVCBudget.Models.EntryDate
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<h4>EntryDate</h4>
+<hr />
+@* <div class="row">
+    <div class="col-md-4">
+        <form asp-action="Index">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Selected" class="control-label"></label>
+                <input asp-for="Selected" class="form-control" />
+                <span asp-validation-for="Selected" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div> *@
+
+@using (Html.BeginForm("Create", "EntryDate", FormMethod.Post))
+{
+     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group"> <label asp-for="DateOnly" class="control-label"></label> <input asp-for="DateOnly" class="form-control"  /> <span asp-validation-for="DateOnly" class="text-danger"></span> </div>
+    <div class="form-group"> <label asp-for="Selected" class="control-label"></label> <select asp-for="Selected" class="form-control" asp-items="@(new SelectList(Model.Period, "Key", "Value"))"></select> <span asp-validation-for="Selected" class="text-danger"></span> </div>
+    <div class="form-group"> <input type="submit" value="Create" class="btn btn-primary" /> </div>
+}
+
+
+
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

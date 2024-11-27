@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MVCBudget.Models;
+using System.Reflection;
 
 namespace MVCBudget.Controllers
 {
@@ -26,16 +28,26 @@ namespace MVCBudget.Controllers
         // POST: LedgerController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(Ledger model, IFormCollection collection)
         {
-            try
-            {
+            
+                try
+                {
+
+                    if (ModelState.IsValid)
+                    {
+                       
+                        Service.MYSQLAccess.InsertLedger(model);
+                    }
+
+                }
+                catch
+                {
+                    return View();
+                }
                 return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+              
+            
         }
 
         // GET: LedgerController/Edit/5
