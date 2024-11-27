@@ -28,7 +28,7 @@
 @using (Html.BeginForm("Create", "EntryDate", FormMethod.Post))
 {
      <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <div class="form-group"> <label asp-for="DateOnly" class="control-label"></label> <input asp-for="DateOnly" class="form-control"  /> <span asp-validation-for="DateOnly" class="text-danger"></span> </div>
+    <div class="form-group"> <label asp-for="DateOnly" class="control-label"></label> <input asp-for="DateOnly" class="form-control"  type="date" /> <span asp-validation-for="DateOnly" class="text-danger"></span> </div>
     <div class="form-group"> <label asp-for="Selected" class="control-label"></label> <select asp-for="Selected" class="form-control" asp-items="@(new SelectList(Model.Period, "Key", "Value"))"></select> <span asp-validation-for="Selected" class="text-danger"></span> </div>
     <div class="form-group"> <input type="submit" value="Create" class="btn btn-primary" /> </div>
 }

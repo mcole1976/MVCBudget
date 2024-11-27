@@ -10,7 +10,11 @@ namespace MVCBudget.Controllers
         // GET: EntryDateController1
         public ActionResult Index()
         {
-            var model = new EntryDate { Period = MYSQLAccess.GetDictionaryData()}; 
+            var model = new EntryDate
+            {
+                DateOnly = DateOnly.FromDateTime(DateTime.Today),
+                Period = MYSQLAccess.GetDictionaryData()
+            }; 
             return View(model);
         }
 
@@ -29,16 +33,22 @@ namespace MVCBudget.Controllers
         // POST: EntryDateController1/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(EntryDate model, IFormCollection collection)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                
+                
+                    var entryDate = new EntryDate();
+                    Service.MYSQLAccess.InsertPeriaod_and_Date(model);
+                
+                
             }
             catch
             {
-                return View();
+                return RedirectToAction(nameof(Index));
             }
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: EntryDateController1/Edit/5

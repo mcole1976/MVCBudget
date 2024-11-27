@@ -107,6 +107,38 @@ namespace MVCBudget.Service
 
 
         }
+
+        public static bool InsertPeriaod_and_Date(EntryDate entryDate)
+        {
+
+            bool ret = true;
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    using (var command = new MySqlCommand("InsertPeriodAndDate", connection))
+                    {
+                        command.CommandType = System.Data.CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@p_date", entryDate.DateOnly);
+                        command.Parameters.AddWithValue("@p_period", entryDate.Selected);
+                        
+
+                        int rowsAffected = command.ExecuteNonQuery();
+
+                        Console.WriteLine(rowsAffected);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ret = false;
+            }
+
+            return ret;
+
+
+        }
     }
 
 
