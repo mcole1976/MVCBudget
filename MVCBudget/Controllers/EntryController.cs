@@ -40,18 +40,14 @@ namespace MVCBudget.Controllers
             try
             {
 
-                if (ModelState.IsValid) 
-                { var entry = new Entry 
-                { Description = model.Description, Amount = model.Amount, };
-                    Service.MYSQLAccess.InsertEntryWithIntermediate(entry);
-               }
+                return RedirectToAction(nameof(Index));
 
             }
             catch
             {
                 return View();
             }
-            return RedirectToAction(nameof(Index));
+            
         }
 
         // GET: EntryController1/Edit/5

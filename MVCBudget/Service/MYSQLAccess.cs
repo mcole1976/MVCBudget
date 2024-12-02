@@ -9,7 +9,7 @@ namespace MVCBudget.Service
         private static string _connectionString;
         public static string GetConnectionString() { return _connectionString; }
         public static void SetConnectionString(string connectionString) { _connectionString = connectionString; }
-        public static bool InsertEntryWithIntermediate(Entry entry)
+        public static bool InsertEntryWithIntermediate(Period_Tally  model)
         {
 
             bool ret = true;
@@ -18,16 +18,20 @@ namespace MVCBudget.Service
                 using (var connection = new MySqlConnection(_connectionString))
                 {
                     connection.Open();
-                    using (var command = new MySqlCommand("InsertEntryWithIntermediate", connection))
+                    foreach (KeyValuePair<string, decimal> kvp in model.Period_Data)
                     {
-                        command.CommandType = System.Data.CommandType.StoredProcedure;
-                        command.Parameters.AddWithValue("@p_Description", entry.Description);
-                        command.Parameters.AddWithValue("@p_Amount", entry.Amount);
+                        using (var command = new MySqlCommand("AddEntry", connection))
+                        {
+                            command.CommandType = System.Data.CommandType.StoredProcedure;
+                            command.Parameters.AddWithValue("@entryDescription", kvp.Key);
+                            command.Parameters.AddWithValue("@entryAmount", kvp.Value);
+                            command.Parameters.AddWithValue("@periodAndDateId", model.Selected);
 
 
-                        int rowsAffected = command.ExecuteNonQuery();
+                            int rowsAffected = command.ExecuteNonQuery();
 
-                        Console.WriteLine(rowsAffected);
+                            Console.WriteLine(rowsAffected);
+                        }
                     }
                 }
             }
@@ -138,6 +142,38 @@ namespace MVCBudget.Service
             return ret;
 
 
+        }
+
+        internal static Dictionary<int, DateOnly> GetDictionaryDateData()
+        {
+            Dictionary<int, DateOnly> res = new Dictionary<int, DateOnly>();
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    using (var command = new MySqlCommand("GetPeriodAndDate", connection))
+                    {
+                        command.CommandType = System.Data.CommandType.StoredProcedure;
+
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                int period = reader.GetInt32("id");
+                                DateOnly dateData = reader.GetDateOnly("date");
+                                res.Add(period, dateData);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return res;
         }
     }
 
