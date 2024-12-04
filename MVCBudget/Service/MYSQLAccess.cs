@@ -79,8 +79,7 @@ namespace MVCBudget.Service
 
         }
     
-
-    public static bool InsertLedger(Ledger ledger)
+        public static bool InsertLedger(Ledger ledger)
         {
 
             bool ret = true;
@@ -143,6 +142,100 @@ namespace MVCBudget.Service
 
 
         }
+        internal static Dictionary<int, DateOnly> GetDictionaryDatePeriodData()
+        {
+            Dictionary<int, DateOnly> res = new Dictionary<int, DateOnly>();
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    using (var command = new MySqlCommand("GetPeriodandDate", connection))
+                    {
+                        command.CommandType = System.Data.CommandType.StoredProcedure;
+
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                int period = reader.GetInt32("id");
+                                DateOnly dateData = reader.GetDateOnly("date");
+                                res.Add(period, dateData);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return res;
+        }
+        internal static Dictionary<int, DateOnly> GetDictionaryIncomeDateData()
+        {
+            Dictionary<int, DateOnly> res = new Dictionary<int, DateOnly>();
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    using (var command = new MySqlCommand("GetPeriodandDateIncome", connection))
+                    {
+                        command.CommandType = System.Data.CommandType.StoredProcedure;
+
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                int period = reader.GetInt32("id");
+                                DateOnly dateData = reader.GetDateOnly("date");
+                                res.Add(period, dateData);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return res;
+        }
+        internal static List<KeyValuePair<int, string>> GetMontlyIncome()
+        {
+            List<KeyValuePair<int, string>> res = new List<KeyValuePair<int, string>>();
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    using (var command = new MySqlCommand("GetIncomeDataLastMonth", connection))
+                    {
+                        command.CommandType = System.Data.CommandType.StoredProcedure;
+
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                int period = reader.GetInt32("id");
+                                string d = reader.GetString("Name");
+                                KeyValuePair<int,string> kvp = new KeyValuePair<int, string>(period, d);
+                                res.Add(kvp);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return res;
+        }
 
         internal static Dictionary<int, DateOnly> GetDictionaryDateData()
         {
@@ -174,6 +267,78 @@ namespace MVCBudget.Service
             }
 
             return res;
+        }
+
+        internal static List<Income_Lots> GetIncomeLotsData()
+        {
+            {
+                List<Income_Lots> res = new List<Income_Lots>();
+                try
+                {
+                    using (var connection = new MySqlConnection(_connectionString))
+                    {
+                        connection.Open();
+                        using (var command = new MySqlCommand("GetIncomeandCostDataPerMonth", connection))
+                        {
+                            command.CommandType = System.Data.CommandType.StoredProcedure;
+
+                            using (var reader = command.ExecuteReader())
+                            {
+                                while (reader.Read())
+                                {
+                                    Income_Lots IL = new Income_Lots();
+
+                                    IL.Id = reader.GetInt32("id");
+                                    IL.Period = reader.GetInt32("Period");
+                                    IL.Description_time = reader.GetString("time desc");
+                                    IL.Entry_id = reader.GetInt32("Id");
+                                    IL.Entry_name = reader.GetString("entry Desc");
+                                    IL.Amount = reader.GetDecimal("amount");
+                                    IL.Income = reader.GetDecimal("income");
+
+                                    res.Add(IL);
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+
+                return res;
+            }
+        }
+
+        internal static bool InsertIncome(Income model)
+        {
+            bool ret = true;
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    using (var command = new MySqlCommand("InsertIncome", connection))
+                    {
+                        command.CommandType = System.Data.CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@amount", model.Net_Income);
+                        command.Parameters.AddWithValue("@val_period_and_date_Id", model.Selected);
+
+
+                        int rowsAffected = command.ExecuteNonQuery();
+
+                        Console.WriteLine(rowsAffected);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ret = false;
+            }
+
+            return ret;
+
         }
     }
 

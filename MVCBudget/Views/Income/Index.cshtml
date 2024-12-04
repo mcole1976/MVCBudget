@@ -1,0 +1,48 @@
+﻿@model MVCBudget.Models.Income
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<h4>Income</h4>
+<hr />
+@using (Html.BeginForm("Create", "Income", FormMethod.Post))
+{
+    <div>
+        <label for="IntDateDropdown">Select Date:</label>
+        <select id="IntDateDropdown" name="IntDateDropdown">
+            @foreach (var item in Model.Dates)
+            {
+                <option value="@item.Key">@item.Value.ToShortDateString()</option>
+            }
+        </select>
+    </div>
+    <div class="form-group">
+        <label asp-for="Selected" class="control-label"></label>
+        <select asp-for="Selected" class="form-control" asp-items="@(new SelectList(Model.Dates, "Key", "Value"))"></select> <span asp-validation-for="Selected" class="text-danger"></span>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="Index">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="form-group">
+                    <label asp-for="Net_Income" class="control-label"></label>
+                    <input asp-for="Net_Income" class="form-control" />
+                    <span asp-validation-for="Net_Income" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+}
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

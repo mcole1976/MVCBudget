@@ -1,0 +1,71 @@
+﻿@model MVCBudget.Models.Visual_Grid
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    bool hasData = false;
+    if(Model.Net_income > 0)
+    {
+        hasData = true; 
+    }
+}
+
+<h1>Index</h1>
+
+<div>
+    <h4>Visual_Grid</h4>
+    <hr />
+    <dl class="row">
+    </dl>
+</div>
+@using (Html.BeginForm("Index", "Visual_Grid", FormMethod.Post, new { id = "DDL" }))
+{
+
+    <div class="form-group">
+        <div class="form-group"> <label asp-for="Selected" class="control-label"></label> <select asp-for="Selected" class="form-control" asp-items="@(new SelectList(Model.Income_Lots, "Key", "Value"))"></select> <span asp-validation-for="Selected" class="text-danger"></span> </div>
+        <input type="submit" value="Index" />
+    </div>
+        @if (hasData)
+        {
+            <table class="table"> 
+            <thead> 
+                <tr> 
+                    <th> @Html.DisplayNameFor(model => model.Income.First().Description_time) </th> 
+                    <th> @Html.DisplayNameFor(model => model.Income.First().Entry_name) </th> 
+                    <th> @Html.DisplayNameFor(model => model.Income.First().Amount) </th> 
+                    
+                </tr> 
+            </thead> 
+            <tbody> @foreach (var item in Model.Income) 
+               {
+                 <tr> 
+                    <td> @Html.DisplayFor(modelItem => item.Description_time) </td> 
+                    <td> @Html.DisplayFor(modelItem => item.Entry_name) </td> 
+                    <td> @Html.DisplayFor(modelItem => item.Amount) </td> 
+                    
+                </tr> 
+               }
+              
+            </tbody> 
+            </table>
+        <div class="row">
+            <div class="col-sm-4">
+                <label>Gross Income</label>
+                @Html.DisplayFor(Model => Model.Net_income, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+            <div class="col-sm-4">
+                <label>Total Costs</label>
+                @Html.DisplayFor(Model => Model.Total_costs, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+            <div class="col-sm-4">
+                <label>Net Income</label>
+                @Html.DisplayFor(Model => Model.Net_income, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        }
+
+
+
+}
+

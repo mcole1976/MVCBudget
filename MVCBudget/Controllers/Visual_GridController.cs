@@ -1,65 +1,51 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MVCBudget.Models;
-using MVCBudget.Service;
+using System.Reflection;
 
 namespace MVCBudget.Controllers
 {
-    public class Period_TallyController : Controller
+    public class Visual_GridController : Controller
     {
-        // GET: Period_TallyController1
+        // GET: Visual_GridController
         public ActionResult Index()
         {
-            var model = new Period_Tally
-            {
-                Date = MYSQLAccess.GetDictionaryDatePeriodData(),
-
-                Period_Data = fnSetData()
-
-
-
-            };
-
-
+            var model = new Visual_Grid();
 
             return View(model);
         }
-
-        private Dictionary<string, decimal> fnSetData()
+        [HttpPost]
+        public ActionResult Index(Visual_Grid grid)
         {
-           Dictionary<string,decimal> res = new Dictionary<string,decimal>();
-            res.Add("Add Data", 0);
-            return res;
+            // Retrieve model based on the selected ID
+
+            Visual_Grid v = new Visual_Grid();
+            v.Selected = grid.Selected;
+            v.SetSelected(v.Selected);
+            return View("Index", v);
         }
 
-        // GET: Period_TallyController1/Details/5
+        // GET: Visual_GridController/Details/5
         public ActionResult Details(int id)
         {
             return View();
         }
 
-        // GET: Period_TallyController1/Create
+        // GET: Visual_GridController/Create
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: Period_TallyController1/Create
+        // POST: Visual_GridController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Period_Tally model, IFormCollection collection)
+        public ActionResult Create(Visual_Grid model, IFormCollection collection)
         {
             try
             {
-                var stringKeys = collection["StringKeys"]; 
-                var decimalValues = collection["DecimalValues"]; 
-                Dictionary<string, decimal> periodData = new Dictionary<string, decimal>(); 
-                for (int i = 0; i < stringKeys.Count; i++) { 
-                    if (decimal.TryParse(decimalValues[i], out decimal decimalValue)) 
-                    { periodData[stringKeys[i]] = decimalValue; } }
 
-                model.Period_Data = periodData;
-                MYSQLAccess.InsertEntryWithIntermediate(model);
+
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -68,13 +54,13 @@ namespace MVCBudget.Controllers
             }
         }
 
-        // GET: Period_TallyController1/Edit/5
+        // GET: Visual_GridController/Edit/5
         public ActionResult Edit(int id)
         {
             return View();
         }
 
-        // POST: Period_TallyController1/Edit/5
+        // POST: Visual_GridController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, IFormCollection collection)
@@ -89,13 +75,13 @@ namespace MVCBudget.Controllers
             }
         }
 
-        // GET: Period_TallyController1/Delete/5
+        // GET: Visual_GridController/Delete/5
         public ActionResult Delete(int id)
         {
             return View();
         }
 
-        // POST: Period_TallyController1/Delete/5
+        // POST: Visual_GridController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, IFormCollection collection)
