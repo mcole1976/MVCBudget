@@ -33,7 +33,18 @@
     <div class="form-group"> <input type="submit" value="Create" class="btn btn-primary" /> </div>
 }
 
-
+<h4>Previous Entries</h4>
+<table class="table"> 
+    <thead> 
+        <tr> 
+            <th>ID</th> <th>Date of Entry</th> <th>Income</th>
+        </tr>
+    </thead> 
+    <tbody> 
+        @foreach (var entry in Model.PreviousEntries)
+        {
+            <tr> <td>@entry.Description</td> <td>@entry.Description_time</td><td>@entry.Income</td> </tr>
+        } </tbody> </table>
 
 
 <div>

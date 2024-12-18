@@ -75,10 +75,49 @@ namespace MVCBudget.Service
 
             return res;
 
+        }
 
+        //GetPayPeriodIDandDesc
+
+        public static List<IncomeTotals> GetDictionaryDataDateDesc()
+        {
+
+            List<IncomeTotals> res = new List<IncomeTotals>();
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    using (var command = new MySqlCommand("GetPayPeriodIDandDesc", connection))
+                    {
+                        command.CommandType = System.Data.CommandType.StoredProcedure;
+
+                        using (var reader = command.ExecuteReader())
+                        {
+
+                            while (reader.Read())
+                            {
+                                IncomeTotals i = new IncomeTotals();
+                                i.Description = reader.GetString("Description");
+                                i.Description_time = reader.GetDateOnly("Date");
+                                i.Income = reader.GetDecimal("Income");
+                                
+                                res.Add(i);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return res;
 
         }
-    
+
+
         public static bool InsertLedger(Ledger ledger)
         {
 
@@ -204,9 +243,9 @@ namespace MVCBudget.Service
 
             return res;
         }
-        internal static List<KeyValuePair<int, string>> GetMontlyIncome()
+        internal static List<KeyValuePair<int, DateOnly>> GetMontlyIncome()
         {
-            List<KeyValuePair<int, string>> res = new List<KeyValuePair<int, string>>();
+            List<KeyValuePair<int, DateOnly>> res = new List<KeyValuePair<int, DateOnly>>();
             try
             {
                 using (var connection = new MySqlConnection(_connectionString))
@@ -221,8 +260,8 @@ namespace MVCBudget.Service
                             while (reader.Read())
                             {
                                 int period = reader.GetInt32("id");
-                                string d = reader.GetString("Name");
-                                KeyValuePair<int,string> kvp = new KeyValuePair<int, string>(period, d);
+                                DateOnly d = reader.GetDateOnly("Date");
+                                KeyValuePair<int, DateOnly> kvp = new KeyValuePair<int, DateOnly>(period, d);
                                 res.Add(kvp);
                             }
                         }
@@ -291,7 +330,7 @@ namespace MVCBudget.Service
                                     IL.Id = reader.GetInt32("id");
                                     IL.Period = reader.GetInt32("Period");
                                     IL.Description_time = reader.GetString("time desc");
-                                    IL.Entry_id = reader.GetInt32("Id");
+                                    IL.Entry_id = reader.GetInt32("Entry_ID");
                                     IL.Entry_name = reader.GetString("entry Desc");
                                     IL.Amount = reader.GetDecimal("amount");
                                     IL.Income = reader.GetDecimal("income");

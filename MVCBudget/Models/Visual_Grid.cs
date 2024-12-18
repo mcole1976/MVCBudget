@@ -9,7 +9,7 @@ namespace MVCBudget.Models
         private decimal _income_amount;
         private decimal _total_costs;
         private decimal _net_income;
-        public List<KeyValuePair<int, string>> Income_Lots { get; private set; }
+        public List<KeyValuePair<int, DateOnly>> Income_Lots { get; private set; }
         public List<Income_Lots> Income { get; private set; }
         public int Selected { get => _selected; set => _selected = value; }
         public decimal Income_amount { get => _income_amount; set => _income_amount = value; }
@@ -19,7 +19,7 @@ namespace MVCBudget.Models
         public Visual_Grid()
         {
             // Initialize the properties
-            Income_Lots = new List<KeyValuePair<int, string>>();
+            Income_Lots = new List<KeyValuePair<int, DateOnly>>();
             Income = new List<Income_Lots>();
 
             // Populate properties with data from the database

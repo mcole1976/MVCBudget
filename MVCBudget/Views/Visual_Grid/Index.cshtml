@@ -22,14 +22,18 @@
 {
 
     <div class="form-group">
-        <div class="form-group"> <label asp-for="Selected" class="control-label"></label> <select asp-for="Selected" class="form-control" asp-items="@(new SelectList(Model.Income_Lots, "Key", "Value"))"></select> <span asp-validation-for="Selected" class="text-danger"></span> </div>
-        <input type="submit" value="Index" />
+        <div class="form-group"> 
+            <label asp-for="Selected" class="control-label"></label>
+            <select asp-for="Selected" class="form-control" asp-items="@(new SelectList(Model.Income_Lots, "Key", "Value"))"></select>
+            <span asp-validation-for="Selected" class="text-danger"></span> </div>
+        <input type="submit" value="Show Values" />
     </div>
         @if (hasData)
         {
             <table class="table"> 
-            <thead> 
-                <tr> 
+            <thead>
+                <tr>
+                    <th> @Html.HiddenFor(model => model.Income.First().Id) </th>
                     <th> @Html.DisplayNameFor(model => model.Income.First().Description_time) </th> 
                     <th> @Html.DisplayNameFor(model => model.Income.First().Entry_name) </th> 
                     <th> @Html.DisplayNameFor(model => model.Income.First().Amount) </th> 
@@ -38,12 +42,21 @@
             </thead> 
             <tbody> @foreach (var item in Model.Income) 
                {
-                 <tr> 
-                    <td> @Html.DisplayFor(modelItem => item.Description_time) </td> 
-                    <td> @Html.DisplayFor(modelItem => item.Entry_name) </td> 
-                    <td> @Html.DisplayFor(modelItem => item.Amount) </td> 
-                    
-                </tr> 
+                 <tr>
+                        <td> @Html.HiddenFor(modelItem => item.Entry_id) </td>
+                        <td> @Html.DisplayFor(modelItem => item.Description_time) </td>
+                        <td> @Html.EditorFor(modelItem => item.Entry_name) </td>
+                        <td> @Html.EditorFor(modelItem => item.Amount) </td>
+                        <td> @using (Html.BeginForm("Edit", "Income", FormMethod.Post))
+                            {
+                                @Html.HiddenFor(modelItem => item.Id) <button type="submit" class="btn btn-primary">Save</button>
+                            } @using (Html.BeginForm("Delete", "Income", FormMethod.Post))
+                            {
+                                @Html.HiddenFor(modelItem => item.Id) <button type="submit" class="btn btn-danger">Delete</button>
+                            } 
+                        </td>
+
+                    </tr> 
                }
               
             </tbody> 
@@ -51,7 +64,7 @@
         <div class="row">
             <div class="col-sm-4">
                 <label>Gross Income</label>
-                @Html.DisplayFor(Model => Model.Net_income, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.DisplayFor(Model => Model.Income_amount, new { htmlAttributes = new { @class = "form-control" } })
             </div>
             <div class="col-sm-4">
                 <label>Total Costs</label>

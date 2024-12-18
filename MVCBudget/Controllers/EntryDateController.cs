@@ -10,10 +10,16 @@ namespace MVCBudget.Controllers
         // GET: EntryDateController1
         public ActionResult Index()
         {
+            var previousEntries = new List<IncomeTotals>();
+            previousEntries = MYSQLAccess.GetDictionaryDataDateDesc();
+
+            var orderedEntries = previousEntries.OrderBy(entry => entry.Description_time).ToList();
+
             var model = new EntryDate
             {
                 DateOnly = DateOnly.FromDateTime(DateTime.Today),
-                Period = MYSQLAccess.GetDictionaryData()
+                Period = MYSQLAccess.GetDictionaryData(),
+                PreviousEntries = orderedEntries
             }; 
             return View(model);
         }
