@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MVCBudget.Models;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace MVCBudget.Controllers
@@ -8,6 +9,16 @@ namespace MVCBudget.Controllers
     public class Visual_GridController : Controller
     {
         // GET: Visual_GridController
+        
+        [HttpPost]
+        public ActionResult Delete(int id)
+        {
+            var model = new Visual_Grid();
+
+            return View(model);
+        }
+
+       
         public ActionResult Index()
         {
             var model = new Visual_Grid();
@@ -55,39 +66,28 @@ namespace MVCBudget.Controllers
         }
 
         // GET: Visual_GridController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
+
 
         // POST: Visual_GridController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+
 
         // GET: Visual_GridController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
+
 
         // POST: Visual_GridController/Delete/5
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Edit( IFormCollection collection)
         {
             try
             {
+                var entryId = collection["item.Entry_id"].ToString(); 
+                var descriptionTime = collection["item.Description_time"].ToString(); 
+                var entryName = collection["item.Entry_name"].ToString(); 
+                var amountString = collection["item.Amount"].ToString();
+
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -95,5 +95,8 @@ namespace MVCBudget.Controllers
                 return View();
             }
         }
+
+
+
     }
 }

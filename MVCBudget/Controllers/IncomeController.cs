@@ -63,10 +63,12 @@ namespace MVCBudget.Controllers
         // POST: IncomeController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit( IFormCollection collection)
         {
             try
             {
+                var entryId = collection["Id"].ToString();
+                var descriptionTime = collection["Income_amount"].ToString();
                 return RedirectToAction(nameof(Index));
             }
             catch
