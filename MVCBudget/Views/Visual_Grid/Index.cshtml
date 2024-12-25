@@ -25,9 +25,11 @@
         <label asp-for="Selected" class="control-label"></label>
         <select asp-for="Selected" class="form-control" asp-items="@(new SelectList(Model.Income_Lots, "Key", "Value"))"></select>
         <span asp-validation-for="Selected" class="text-danger"></span>
+        <br />
         <input type="submit" value="Show Values" />
     </div>
 }
+<br />
 
 @if (hasData)
 {
@@ -55,7 +57,7 @@
                     @using (Html.BeginForm("Delete", "Visual_Grid", FormMethod.Post))
                     {
                         <td>
-                        @Html.HiddenFor(modelItem => item.Id)
+                            @Html.HiddenFor(modelItem => item.Entry_id)
                         <button type="submit" class="btn btn-danger">Delete</button>
                         </td>
                     }

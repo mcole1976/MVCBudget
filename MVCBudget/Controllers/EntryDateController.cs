@@ -54,7 +54,7 @@ namespace MVCBudget.Controllers
             {
                 return RedirectToAction(nameof(Index));
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Income");
         }
 
         // GET: EntryDateController1/Edit/5

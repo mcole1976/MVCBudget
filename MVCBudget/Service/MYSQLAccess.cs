@@ -1,6 +1,8 @@
-﻿using MVCBudget.Models;
+﻿using Microsoft.Extensions.Hosting;
+using MVCBudget.Models;
 using MySqlConnector;
 using System.Configuration;
+using System.Reflection;
 
 namespace MVCBudget.Service
 {
@@ -378,6 +380,92 @@ namespace MVCBudget.Service
 
             return ret;
 
+        }
+
+        internal static bool AmendIncome(int entryId, decimal income)
+        {
+            bool ret = true;
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    using (var command = new MySqlCommand("Amend_Income", connection))
+                    {
+                        command.CommandType = System.Data.CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@P_Income", income );
+                        command.Parameters.AddWithValue("@P_Id", entryId);
+
+
+                        int rowsAffected = command.ExecuteNonQuery();
+
+                        Console.WriteLine(rowsAffected);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ret = false;
+            }
+
+            return ret;
+        }
+
+        internal static bool Amend_Cost(int id, decimal cost)
+        {
+            bool ret = true;
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    using (var command = new MySqlCommand("Amend_Cost", connection))
+                    {
+                        command.CommandType = System.Data.CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@P_Cost", cost);
+                        command.Parameters.AddWithValue("@P_Id", id);
+
+
+                        int rowsAffected = command.ExecuteNonQuery();
+
+                        Console.WriteLine(rowsAffected);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ret = false;
+            }
+
+            return ret;
+        }
+
+        internal static bool DeleteCost(int id)
+        {
+            bool ret = true;
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    using (var command = new MySqlCommand("Delete_Cost", connection))
+                    {
+                        command.CommandType = System.Data.CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@P_Id", id);
+
+
+                        int rowsAffected = command.ExecuteNonQuery();
+
+                        Console.WriteLine(rowsAffected);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ret = false;
+            }
+
+            return ret;
         }
     }
 

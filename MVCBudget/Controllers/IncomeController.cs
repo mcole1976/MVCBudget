@@ -67,14 +67,33 @@ namespace MVCBudget.Controllers
         {
             try
             {
-                var entryId = collection["Id"].ToString();
-                var descriptionTime = collection["Income_amount"].ToString();
-                return RedirectToAction(nameof(Index));
+                string entryId = collection["Id"].ToString();
+                string incomeAmount = collection["Income_amount"].ToString();
+                int entry_ID = 0;
+                decimal income_total = 0;
+                bool conv = int.TryParse(entryId, out entry_ID);
+                if (conv)
+                {
+
+                    conv = decimal.TryParse(incomeAmount, out income_total);
+
+                }
+                else 
+                {
+                    return RedirectToAction("Index", "Visual_Grid");
+                }
+                if (conv)
+                {
+                    MYSQLAccess.AmendIncome(entry_ID, income_total);
+                    return RedirectToAction("Index", "Visual_Grid"); 
+                }
+               
             }
             catch
             {
                 return View();
             }
+            return View();
         }
 
         // GET: IncomeController/Delete/5

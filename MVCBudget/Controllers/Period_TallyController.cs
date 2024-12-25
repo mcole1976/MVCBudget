@@ -54,9 +54,13 @@ namespace MVCBudget.Controllers
                 var stringKeys = collection["StringKeys"]; 
                 var decimalValues = collection["DecimalValues"]; 
                 Dictionary<string, decimal> periodData = new Dictionary<string, decimal>(); 
-                for (int i = 0; i < stringKeys.Count; i++) { 
+                for (int i = 0; i < stringKeys.Count; i++) 
+                { 
                     if (decimal.TryParse(decimalValues[i], out decimal decimalValue)) 
-                    { periodData[stringKeys[i]] = decimalValue; } }
+                    { 
+                        periodData[stringKeys[i]] = decimalValue; 
+                    } 
+                }
 
                 model.Period_Data = periodData;
                 MYSQLAccess.InsertEntryWithIntermediate(model);

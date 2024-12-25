@@ -30,6 +30,9 @@ namespace MVCBudget.Models
         {
             Income_Lots = MYSQLAccess.GetMontlyIncome();
             Income = MYSQLAccess.GetIncomeLotsData();
+
+            
+            
         }
 
         public void SetSelected(int selected)
