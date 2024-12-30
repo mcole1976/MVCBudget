@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MVCBudget.Models;
+using MVCBudget.Service;
 using System.Diagnostics;
 
 namespace MVCBudget.Controllers
@@ -15,7 +16,11 @@ namespace MVCBudget.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            var model = new GraphData();
+
+            model.setData();
+            
+            return View(model);
         }
 
         public IActionResult Privacy()

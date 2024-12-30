@@ -312,7 +312,7 @@ namespace MVCBudget.Service
 
         internal static List<Income_Lots> GetIncomeLotsData()
         {
-            {
+            
                 List<Income_Lots> res = new List<Income_Lots>();
                 try
                 {
@@ -349,7 +349,7 @@ namespace MVCBudget.Service
                 }
 
                 return res;
-            }
+            
         }
 
         internal static bool InsertIncome(Income model)
@@ -466,6 +466,81 @@ namespace MVCBudget.Service
             }
 
             return ret;
+        }
+
+        internal static List<IncomeKVP> SetIncomeKVP()
+        {
+            List<IncomeKVP> res = new List<IncomeKVP>();
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    using (var command = new MySqlCommand("NextMonthIncome", connection))
+                    {
+                        command.CommandType = System.Data.CommandType.StoredProcedure;
+
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                IncomeKVP M = new IncomeKVP();
+
+                                M.Date = reader.GetDateOnly("date");
+                                M.Period = reader.GetInt32("Period");
+                                M.Income = reader.GetDecimal("income");
+
+                                res.Add(M);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return res;
+        }
+
+        
+
+        internal static List<ExepenceKVP> SetExpenceKVP()
+        {
+            List<ExepenceKVP> res = new List<ExepenceKVP>();
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    using (var command = new MySqlCommand("NextMonthExpenses", connection))
+                    {
+                        command.CommandType = System.Data.CommandType.StoredProcedure;
+
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                ExepenceKVP M = new ExepenceKVP();
+
+                                M.Date = reader.GetDateOnly("date");
+                                M.Period = reader.GetInt32("Period");
+                                M.Name = reader.GetString("Expln");
+                                M.Income = reader.GetDecimal("Amount");
+
+                                res.Add(M);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return res;
         }
     }
 
