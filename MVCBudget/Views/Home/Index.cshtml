@@ -6,12 +6,21 @@
 
 <h1>Home Graph</h1>
 <div> <canvas id="periodChart"></canvas> </div>
-<div> <canvas id="CostCahrt"></canvas> </div>
+<div> <canvas id="costChart"></canvas> </div>
 @section scripts 
 {
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
-<script> var periodData = @Html.Raw(Json.Serialize(Model.IncomeKVPs)); 
+<script>
+
+             function onlyUnique(value, index, array)
+            {
+                return array.indexOf(value) === index;
+            }
+    
+    var periodData = @Html.Raw(Json.Serialize(Model.IncomeKVPs));
+        var otherdata =@Html.Raw(Json.Serialize(Model.ExepenceKVPs));
 var labels = []; 
 var values = [];
 console.log(periodData);
@@ -34,14 +43,103 @@ console.log(periodData);
 console.log(labels);
 console.log(values);
 var ctx = document.getElementById('periodChart').getContext('2d'); 
+
+
 var periodChart = new Chart(ctx, 
     { type: 'bar', 
     data: { labels: labels, datasets: 
         [{ 
             label: 'Value', data: values, backgroundColor: 'rgba(54, 162, 235, 0.2)'
             , borderColor: 'rgba(54, 162, 235, 1)', borderWidth: 1 }] }
-            , options: { scales: { x: { title: { display: true, text: 'Period' } }
-            , y: { beginAtZero: true, title: { display: true, text: 'Value' } } } } 
+            , options: 
+            { 
+                scales: { 
+                    x: { 
+                            title: { display: true, text: 'Period' } ,
+                            stacked: true
+                        }, 
+                    y: { 
+                        beginAtZero: true, 
+                        title: { display: true, text: 'Value' } ,
+                        stacked: true
+                    } } 
+            } 
     });
+
+            var perd =[];
+            var values = []; 
+            var dates = []; 
+            // Assuming names is the second dataset 
+            console.log('mcsc');
+            console.log(otherdata);
+
+            var transformedData = 
+            {   dates: [], 
+                periods: [], 
+                incomes: [], 
+                names: [],
+                sumP1: 0, 
+                sumP2: 0, 
+                sumP3: 0, 
+                sumsByPeriod: []
+
+            };
+
+
+
+
+            otherdata.forEach(function(arrayItem, index) 
+                {
+                            transformedData.dates.push(arrayItem.date); 
+                            transformedData.periods.push(arrayItem.period); 
+                            transformedData.incomes.push(arrayItem.income); 
+                            transformedData.names.push(arrayItem.name);
+                            if (arrayItem.period === 1) 
+                            { transformedData.sumP1 += arrayItem.income; } 
+                            else if (arrayItem.period === 2) { transformedData.sumP2 += arrayItem.income; } 
+                            else if (arrayItem.period === 3) { transformedData.sumP3 += arrayItem.income; }
+                }
+            );
+
+                    // Add the sums to the array 
+                    transformedData.sumsByPeriod = [transformedData.sumP2, transformedData.sumP3, transformedData.sumP1];
+
+
+
+
+            console.log(transformedData);
+            var unique = transformedData.dates.filter(onlyUnique);
+            console.log(values);
+            console.log(dates);
+            var cctx = document.getElementById('costChart').getContext('2d'); 
+            var costingChart = new Chart(cctx, 
+                { type: 'bar', data: { labels: unique, datasets: [ 
+                    {   label: 'Cost'
+                        , data: transformedData.sumsByPeriod
+                        , backgroundColor: 'rgba(54, 162, 235, 0.2)'
+                        , borderColor: 'rgba(54, 162, 235, 1)'
+                        , borderWidth: 1 }] 
+                    }
+                    , options: 
+                    { scales: 
+                        { 
+                            x: 
+                                { title:  { display: true, text: 'Period' }
+
+                                    , stacked: true 
+                                }
+                                 , y: 
+                                 { beginAtZero: true
+                                , title: { display: true, text: 'Value' }
+                                , stacked: true 
+                                 } 
+                        } 
+                    
+                    } 
+            });
+    console.log(labels);
+            
+   
+
 </script>
 }
