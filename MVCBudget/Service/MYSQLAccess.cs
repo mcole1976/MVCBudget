@@ -100,6 +100,7 @@ namespace MVCBudget.Service
                             while (reader.Read())
                             {
                                 IncomeTotals i = new IncomeTotals();
+                                i.ID  = reader.GetInt32("id");
                                 i.Description = reader.GetString("Description");
                                 i.Description_time = reader.GetDateOnly("Date");
                                 i.Income = reader.GetDecimal("Income");
@@ -439,6 +440,37 @@ namespace MVCBudget.Service
 
             return ret;
         }
+        
+
+        internal static bool DeleteIncome(int id)
+        {
+            bool ret = true;
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    using (var command = new MySqlCommand("DeleteIncome", connection))
+                    {
+                        command.CommandType = System.Data.CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@P_Id", id);
+
+
+                        int rowsAffected = command.ExecuteNonQuery();
+
+                        Console.WriteLine(rowsAffected);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ret = false;
+            }
+
+            return ret;
+        }
+
+
 
         internal static bool DeleteCost(int id)
         {

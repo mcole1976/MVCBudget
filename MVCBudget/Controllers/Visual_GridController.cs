@@ -129,7 +129,7 @@ namespace MVCBudget.Controllers
                 {
                     return RedirectToAction(nameof(Index));
                 }
-                if (conv && cost > 0) {
+                if (conv && cost > -1) {
                     MYSQLAccess.Amend_Cost(Id, cost);
                 }
                 else

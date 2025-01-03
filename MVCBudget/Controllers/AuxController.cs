@@ -1,78 +1,61 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MVCBudget.Models;
 using MVCBudget.Service;
 
 namespace MVCBudget.Controllers
 {
-    public class IncomeController : Controller
+    public class AuxController : Controller
     {
-        // GET: IncomeController
+        // GET: AuxController
         public ActionResult Index()
         {
-            //return View();
-            var model = new Income
-            {
-                Dates = MYSQLAccess.GetDictionaryIncomeDateData(),
-            };
-
-
-
-            return View(model);
-
-
-
-
+            return View();
         }
 
-        // GET: IncomeController/Details/5
+        // GET: AuxController/Details/5
         public ActionResult Details(int id)
         {
             return View();
         }
 
-        // GET: IncomeController/Create
+        // GET: AuxController/Create
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: IncomeController/Create
+        // POST: AuxController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create( Income model, IFormCollection collection)
+        public ActionResult Create(IFormCollection collection)
         {
             try
             {
-                Service.MYSQLAccess.InsertIncome(model);
                 return RedirectToAction(nameof(Index));
-                
             }
             catch
             {
-                return View(nameof(Index));
+                return View();
             }
         }
 
-        // GET: IncomeController/Edit/5
+        // GET: AuxController/Edit/5
         public ActionResult Edit(int id)
         {
             return View();
         }
 
-
-
-
-
-        // POST: IncomeController/Edit/5
+        // POST: AuxController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit( IFormCollection collection)
+        public ActionResult Edit(int id, IFormCollection collection)
         {
             try
             {
-                string entryId = collection["Id"].ToString();
-                string incomeAmount = collection["Income_amount"].ToString();
+
+                string entryId = collection["entry.ID"].ToString();
+                string incomeAmount = collection["entry.Income"].ToString();
+
                 int entry_ID = 0;
                 decimal income_total = 0;
                 bool conv = int.TryParse(entryId, out entry_ID);
@@ -82,48 +65,40 @@ namespace MVCBudget.Controllers
                     conv = decimal.TryParse(incomeAmount, out income_total);
 
                 }
-                else 
+                else
                 {
-                    return RedirectToAction("Index", "Visual_Grid");
+                    return RedirectToAction("Index", "Income");
                 }
                 if (conv)
                 {
                     MYSQLAccess.AmendIncome(entry_ID, income_total);
-                    return RedirectToAction("Index", "Visual_Grid"); 
+                    return RedirectToAction("Index", "EntryDate");
                 }
-               
+
+
+
+                return RedirectToAction(nameof(Index));
             }
             catch
             {
                 return View();
             }
-            return View();
         }
 
-        // GET: IncomeController/Delete/5
+        // GET: AuxController/Delete/5
         public ActionResult Delete(int id)
         {
             return View();
         }
 
-        // POST: IncomeController/Delete/5
+        // POST: AuxController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, IFormCollection collection)
         {
             try
             {
-                string entryId = collection["entry.ID"].ToString();
-                
-
-                int entry_ID = 0;
-                decimal income_total = 0;
-                bool conv = int.TryParse(entryId, out entry_ID);
-                if (conv)
-                {
-                    MYSQLAccess.DeleteIncome(entry_ID);
-                }
-                return RedirectToAction("Index", "EntryDate");
+                return RedirectToAction(nameof(Index));
             }
             catch
             {
