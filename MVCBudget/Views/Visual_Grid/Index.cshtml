@@ -9,6 +9,19 @@
         hasData = true; 
     }
 }
+<style>
+     #dataTable th:nth-child(1), #dataTable td:nth-child(1) { /* Entry ID */
+        display: none;
+    }
+
+    #dataTable th:nth-child(2), #dataTable td:nth-child(2) { /* Description Time */
+        display: none;
+    }
+
+    #dataTable th:nth-child(5), #dataTable td:nth-child(5) { /* Income */
+        display: none;
+    }
+</style>
 
 <h1>Index</h1>
 
@@ -19,21 +32,154 @@
     </dl>
 </div>
 
-@using (Html.BeginForm("Index", "Visual_Grid", FormMethod.Post, new { id = "DDL" }))
+@using (Html.BeginForm("Index", "Visual_Grid", FormMethod.Post))
 {
     <div class="form-group">
         <label asp-for="Selected" class="control-label"></label>
-        <select asp-for="Selected" class="form-control" asp-items="@(new SelectList(Model.Income_Lots, "Key", "Value"))"></select>
+        <select asp-for="Selected" id ="incomeDropdown" class="form-control" asp-items="@(new SelectList(Model.Income_Lots, "Key", "Value"))"></select>
         <span asp-validation-for="Selected" class="text-danger"></span>
         <br />
         <input type="submit" value="Show Values" />
     </div>
 }
 <br />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
+<script type="text/javascript" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
 
+<script type="text/javascript">
+      var dropdownChanged = false;
+
+    $(document).ready(function () 
+       
+       { 
+           dropdownChanged = false;
+           $('#incomeDropdown').change(function () { 
+               dropdownChanged = true;
+               var selectedValue = $(this).val(); 
+    
+            // Check if a value is selected
+            $.ajax({ url: '@Url.Action("Change", "Visual_Grid")', 
+            type: 'GET', 
+            data: { Selected: selectedValue }, 
+            success: function (data) { console.log("Received data:", data); 
+            if (data.Message && data.Message === "No data found")
+            { window.location.href = '@Url.Action("Index", "Visual_Grid")'; } 
+            else
+            { updateTable(data); } }, error: function (error) { console.log("Error:", error); } });  
+        }); 
+
+        $(document).on('click', '.saveButton', 
+        function() 
+            { 
+                var entryId = $(this).data('entry-id'); 
+                var amount = parseFloat($(this).closest('tr').find('.amountInput').val());
+                //saveEntry(entryId, amount); 
+                console.log(entryId);
+                console.log(amount);
+                saveEntry(entryId, amount);
+
+            });
+        
+        $(document).on('click', '.deleteButton',
+        function()
+            {
+                var entryId = $(this).data('entry-id');
+                //saveEntry(entryId, amount);
+                console.log(entryId);
+                deleteEntry(entryId);
+
+            });
+        
+        
+        
+        
+        
+        
+        
+        });
+
+    function updateTable(data) {
+        console.log(data);
+        var index = 0;
+        var ii = {};
+         var rows ='';
+    // Assuming you have a table with an id of 'dataTable' 
+       data.forEach(item => { if (item && item.entry_id && item.description_time && item.entry_name && item.amount && item.income) 
+           { 
+               rows += '<tr>'; 
+               rows += '<td>' + item.entry_id + '</td>'; 
+               rows += '<td>' + item.description_time + '</td>'; 
+               rows += '<td>' + item.entry_name + '</td>'; 
+               rows += '<td> <input type="text" class="amountInput" value="' + item.amount + '"></td>';
+               rows += '<td>' + item.income + '</td>'; 
+               rows += '<td> <button type="button" class="btn btn-primary saveButton" data-entry-id="' + item.entry_id + '" data-amount="' + item.amount + '">Save</button> </td>';
+               rows += '<td><button type="button" class="btn btn-primary deleteButton" data-entry-id="' + item.entry_id + '">Delete</button></td>';
+               rows += '</tr>'; 
+               console.log(item); 
+
+           }
+           else { console.error('Invalid item:', item); } });
+        $('#dataTable').html(rows);
+
+    }
+    function saveEntry(entryId, amount) 
+    { 
+        console.log('Data:', { entryId: entryId, amount: amount }); 
+        $.ajax(
+            { url: '/Visual_Grid/Make'
+            , type: 'POST'
+            , contentType: 'application/json'
+            , data: JSON.stringify({ entryId: entryId, amount: amount })
+            , success: function(response) 
+                { console.log('Entry saved successfully:', response); }
+            , error: function(error) 
+                { console.error('Error saving entry:', error); } 
+        
+        
+        });
+    
+    }
+
+    function deleteEntry(entryId) 
+    { 
+        console.log('Delete button clicked for entry ID:', entryId); 
+        $.ajax({ url: '/Visual_Grid/DeleteEntry'
+        , type: 'POST'
+        , contentType: 'application/json'
+        , data: JSON.stringify({ entryId: entryId })
+        , success: function(response) { console.log('Entry deleted successfully:', response); }
+        , error: function(error) { console.error('Error deleting entry:', error); } 
+        });
+    }
+
+
+</script>
+  @using (Html.BeginForm("Edit", "Visual_Grid", FormMethod.Post))
+                    {
+            
+                    }
+
+<table class="table" id="dataTable">
+    <thead>
+        <tr>
+            <th scope="col">Entry ID</th>
+            <th scope="col">Decription Time</th>
+            <th scope="col">Description</th>
+            <th scope="col">Entry Name</th>
+            <th scope="col">Income</th>
+            <th scope="col">Amount</th>
+            <th scope="col">Save</th>
+            <th scope="col">Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+
+</table>
 @if (hasData)
 {
-    <table class="table">
+    <table class="table" id="tableDataVG">
         <thead>
             <tr>
                 <th>@Html.DisplayNameFor(model => model.Income.First().Description_time)</th>

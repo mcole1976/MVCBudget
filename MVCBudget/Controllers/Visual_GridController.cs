@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using MVCBudget.Models;
 using MVCBudget.Service;
+using Newtonsoft.Json.Linq;
 using System.Diagnostics;
 using System.Reflection;
+using System.Text.Json;
 
 namespace MVCBudget.Controllers
 {
@@ -37,6 +39,30 @@ namespace MVCBudget.Controllers
 
             return View(model);
         }
+        [HttpGet]
+        public JsonResult Change(int Selected)
+        {
+            // Retrieve model based on the selected ID
+
+            Visual_Grid v = new Visual_Grid();
+            List<Income_Lots> resultSet = new List<Income_Lots>(); 
+            if (Selected != 0)
+            {
+                v.Selected = Selected;
+                v.SetSelected(v.Selected);
+                resultSet = v.Income;
+                
+            }
+            if (resultSet.Count == 0)
+            { // Return a message indicating no data found
+                return Json(new { Message = "No data found" });
+            }
+                return Json(resultSet);
+        }
+
+
+
+
         [HttpPost]
         public ActionResult Index(Visual_Grid grid)
         {
@@ -62,6 +88,54 @@ namespace MVCBudget.Controllers
 
         // POST: Visual_GridController/Create
         [HttpPost]
+        public JsonResult Make([FromBody] JsonDocument d)
+        {
+
+            try
+            {
+                //string entryId = collection["item.Entry_id"].ToString();
+                ////var descriptionTime = collection["item.Description_time"].ToString(); 
+                ////var entryName = collection["item.Entry_name"].ToString(); 
+                //string amountString = collection["item.Amount"].ToString();
+                var data = d.RootElement;
+                var entryId = data.GetProperty("entryId").GetInt32(); 
+                var amount = data.GetProperty("amount").GetDecimal();
+
+                int Id = 0;
+                decimal cost = 0;
+                bool conv = false;
+
+                
+                if (cost > -1)
+                {
+                    MYSQLAccess.Amend_Cost(entryId, amount);
+                }
+                else
+                {
+
+                }
+
+
+                return Json(new { success = true, message = "Entry saved successfully" }); 
+            }
+            catch
+            {
+                return Json(new { success = true, message = "Entry saved successfully" }); 
+            }
+        }
+
+        [HttpPost]
+        public JsonResult DeleteEntry([FromBody] JsonDocument d)
+        { // Your delete logic here // Return a JSON response
+            var data = d.RootElement;
+            var entryId = data.GetProperty("entryId").GetInt32();
+            MYSQLAccess.DeleteCost(entryId);
+
+            return Json(new { success = true, message = "Entry deleted successfully" }); 
+        }
+
+
+            [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(Visual_Grid model, IFormCollection collection)
         {
