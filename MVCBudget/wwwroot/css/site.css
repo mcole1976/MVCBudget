@@ -25,6 +25,7 @@ body {
 .saveButton, .deleteButton {
     display: inline-block; /* Ensure buttons are visible */
     margin-right: 5px; /* Add some spacing between buttons */
+    color: white;
 }
 .hLabel {
     visibility: hidden;
@@ -37,4 +38,5 @@ body {
     min-height: 40px; /* Minimum height */
     padding: 10px 20px; /* Padding */
     font-size: 16px; /* Font size */
+    color: white;   
 }
