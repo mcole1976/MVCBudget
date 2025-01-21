@@ -101,19 +101,8 @@ namespace MVCBudget.Controllers
                 var entryId = data.GetProperty("entryId").GetInt32(); 
                 var amount = data.GetProperty("amount").GetDecimal();
 
-                int Id = 0;
-                decimal cost = 0;
-                bool conv = false;
-
-                
-                if (cost > -1)
-                {
                     MYSQLAccess.Amend_Cost(entryId, amount);
-                }
-                else
-                {
-
-                }
+                
 
 
                 return Json(new { success = true, message = "Entry saved successfully" }); 
@@ -123,6 +112,54 @@ namespace MVCBudget.Controllers
                 return Json(new { success = true, message = "Entry saved successfully" }); 
             }
         }
+
+
+        [HttpPost]
+        public JsonResult Income_Amend([FromBody] JsonDocument d)
+        {
+
+            try
+            {
+                var data = d.RootElement;
+                var entryId = data.GetProperty("entryId").ToString();
+                var amount = data.GetProperty("amount").ToString();
+
+                bool conv = false;
+                decimal Income = 0;
+                int Id = 0;
+
+                conv = int.TryParse(entryId, out Id);
+                if (conv)
+                {
+                    conv = decimal.TryParse(amount, out  Income);  
+                }
+
+
+                
+
+                if (Income > -1)
+                {
+
+                    MYSQLAccess.AmendIncome(Id, Income);
+                }
+                else
+                {
+
+                }
+
+
+                return Json(new { success = true, message = "Entry saved successfully" });
+            }
+            catch
+            {
+                return Json(new { success = true, message = "Entry saved successfully" });
+            }
+        }
+
+
+
+
+
 
         [HttpPost]
         public JsonResult DeleteEntry([FromBody] JsonDocument d)

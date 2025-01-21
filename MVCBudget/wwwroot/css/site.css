@@ -26,3 +26,15 @@ body {
     display: inline-block; /* Ensure buttons are visible */
     margin-right: 5px; /* Add some spacing between buttons */
 }
+.hLabel {
+    visibility: hidden;
+}
+.amend_I {
+    display: inline-block; /* Ensure buttons are visible */
+    margin-top: 12px; /* Add some spacing between buttons */
+    margin-right: 5px; /* Add some spacing between buttons */
+    min-width: 100px; /* Minimum width */
+    min-height: 40px; /* Minimum height */
+    padding: 10px 20px; /* Padding */
+    font-size: 16px; /* Font size */
+}

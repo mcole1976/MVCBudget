@@ -92,11 +92,30 @@
             });
         
         
-        
-        
-        
-        
-        
+        // $(document).on('click', '.saveButton',
+        // function()
+        //     {
+        //         var entryId = $(this).data('entry-id');
+        //         var amount = parseFloat($(this).closest('tr').find('.amountInput').val());
+        //         //saveEntry(entryId, amount);
+        //         console.log(entryId);
+        //         console.log(amount);
+        //         saveEntry(entryId, amount);
+
+        //     });
+        // });
+
+        $(document).on('click', '.amend_I',
+        function()
+            {
+                var entryId = document.getElementById('hiddenID').innerHTML ;
+                var amount = $('#incomeInput').val();
+                //saveEntry(entryId, amount);
+                console.log(entryId);
+                console.log(amount);
+                saveIncome(entryId, amount);
+
+            });
         });
 
     function updateTable(data) {
@@ -104,9 +123,33 @@
         var index = 0;
         var ii = {};
          var rows ='';
+         var heads = '';
+         var income = 0;
+         var summedcosts = 0;
+         var main_id = 0;
+
     // Assuming you have a table with an id of 'dataTable' 
        data.forEach(item => { if (item && item.entry_id && item.description_time && item.entry_name && item.amount && item.income) 
            { 
+               if (index == 0)
+               {
+                    heads += '<thead>';
+                    heads  += '<tr>';
+                    heads   +='<th scope="col">Entry ID</th>';
+                    heads   +='<th scope="col">Decription Time</th>';
+                    heads   += '<th scope="col">Entry Name</th>';
+                    heads   +='<th scope="col">Amount</th>';
+                    heads   +='<th scope="col">Income</th>';
+                    heads   +='<th scope="col">Save</th>';
+                    heads   +='<th scope="col">Delete</th>';
+                    heads   += '</tr>';
+                    heads   += '</thead>';
+                    
+                    rows += heads;
+                    income = item.income;
+                    main_id = item.id
+                    document.getElementById('hiddenID').innerHTML =main_id;
+               }
                rows += '<tr>'; 
                rows += '<td>' + item.entry_id + '</td>'; 
                rows += '<td>' + item.description_time + '</td>'; 
@@ -117,12 +160,36 @@
                rows += '<td><button type="button" class="btn btn-primary deleteButton" data-entry-id="' + item.entry_id + '">Delete</button></td>';
                rows += '</tr>'; 
                console.log(item); 
-
+               summedcosts += item.amount;
+               index++;
            }
            else { console.error('Invalid item:', item); } });
-        $('#dataTable').html(rows);
+            $('#dataTable').html(rows);
+            $('#incomeInput').val(income);
+            $('#costInput').val(summedcosts);
+            $('#netInput').val(income - summedcosts);
 
     }
+    function saveIncome(entryId, amount)
+    {
+        console.log('Data:', { entryId: entryId, amount: amount });
+        $.ajax(
+            { url: '/Visual_Grid/Income_Amend'
+            , type: 'POST'
+            , contentType: 'application/json'
+            , data: JSON.stringify({ entryId: entryId, amount: amount })
+            , success: function(response)
+                { console.log('Entry saved successfully:', response); }
+            , error: function(error)
+                { console.error('Error saving entry:', error); }
+
+
+        });
+
+    }
+
+
+
     function saveEntry(entryId, amount) 
     { 
         console.log('Data:', { entryId: entryId, amount: amount }); 
@@ -161,81 +228,40 @@
                     }
 
 <table class="table" id="dataTable">
-    <thead>
-        <tr>
-            <th scope="col">Entry ID</th>
-            <th scope="col">Decription Time</th>
-            <th scope="col">Description</th>
-            <th scope="col">Entry Name</th>
-            <th scope="col">Income</th>
-            <th scope="col">Amount</th>
-            <th scope="col">Save</th>
-            <th scope="col">Delete</th>
-        </tr>
-    </thead>
+   
     <tbody>
     </tbody>
 
 </table>
-@if (hasData)
-{
-    <table class="table" id="tableDataVG">
-        <thead>
-            <tr>
-                <th>@Html.DisplayNameFor(model => model.Income.First().Description_time)</th>
-                <th>@Html.DisplayNameFor(model => model.Income.First().Entry_name)</th>
-                <th>@Html.DisplayNameFor(model => model.Income.First().Amount)</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.Income)
-            {
-                <tr>
-                    @using (Html.BeginForm("Edit", "Visual_Grid", FormMethod.Post))
-                    {
-                        <td>@Html.HiddenFor(modelItem => item.Entry_id)</td>
-                        <td>@Html.EditorFor(modelItem => item.Description_time, new { htmlAttributes = new { @class = "form-control" } })</td>
-                        <td>@Html.EditorFor(modelItem => item.Entry_name, new { htmlAttributes = new { @class = "form-control" } })</td>
-                        <td>@Html.EditorFor(modelItem => item.Amount, new { htmlAttributes = new { @class = "form-control" } })</td>
-                        <td> <button type="submit" class="btn btn-primary">Save</button> </td>
-                    }
-                    @using (Html.BeginForm("Delete", "Visual_Grid", FormMethod.Post))
-                    {
-                        <td>
-                            @Html.HiddenFor(modelItem => item.Entry_id)
-                        <button type="submit" class="btn btn-danger">Delete</button>
-                        </td>
-                    }
-                    
-                </tr>
-            }
-        </tbody>
-    </table>
-
-    <div class="row">
-        @using (Html.BeginForm("Edit", "Income", FormMethod.Post))
-        {
-        <div class="col-sm-1">
-            @Html.HiddenFor(model => model.Income.First().Id)
-            </div>
-        <div class="col-sm-3">
-            <label>Gross Income</label>
-            @Html.EditorFor(model => model.Income_amount, new { htmlAttributes = new { @class = "form-control" } })
-            <br />
-                <button type="submit" class="btn btn-primary">Save</button>
-
-        </div>
-        }
-        <div class="col-sm-4">
-            <label>Total Costs</label>
-            @Html.DisplayFor(model => model.Total_costs, new { htmlAttributes = new { @class = "form-control" } })
-        </div>
-        <div class="col-sm-4">
-            <label>Net Income</label>
-            @Html.DisplayFor(model => model.Net_income, new { htmlAttributes = new { @class = "form-control" } })
-        </div>
+<div class="row">
+    <div class="col-sm-1">
+        <label id="hiddenID" class="hLabel"></label>
     </div>
-}
+    <div class="col-sm-3">
+        <label>Gross Income</label>
+        <input type="text" id="incomeInput"  />
+    </div>
+    <div class="col-sm-4">
+        <label>Total Costs</label>
+        <input type="text" id="costInput" readonly />
+    </div>
+    <div class="col-sm-4">
+        <label>Net Income</label>
+        <input type="text" id="netInput" readonly />
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-2">
+        
+    </div>
+    <div class="col-sm-10">
+        
+        <button type="button" class="btn btn-primary btn-lg amend_I" text="Amend Income">Amend Income</button>
+    </div>
+ 
+</div>
+
+
+    
 
 
