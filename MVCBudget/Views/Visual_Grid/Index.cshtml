@@ -179,7 +179,12 @@
             , contentType: 'application/json'
             , data: JSON.stringify({ entryId: entryId, amount: amount })
             , success: function(response)
-                { console.log('Entry saved successfully:', response); }
+                { 
+                    console.log('Entry saved successfully:', response); 
+                    document.getElementById('incomeInput').value = response.income;
+                    document.getElementById('costInput').value = response.costs;
+                    document.getElementById('netInput').value =  response.income - response.costs;
+                }
             , error: function(error)
                 { console.error('Error saving entry:', error); }
 

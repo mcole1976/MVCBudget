@@ -574,6 +574,45 @@ namespace MVCBudget.Service
 
             return res;
         }
+
+        internal static KeyValuePair<decimal, decimal> MakeRetrunDataKVP(int id)
+        {
+            KeyValuePair<decimal, decimal> res = new KeyValuePair<decimal, decimal>();
+            decimal d1 = 0;
+            decimal d2 = 0;
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    using (var command = new MySqlCommand("GeTPeriodCostByID", connection))
+                    {
+                        command.CommandType = System.Data.CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@_ID", id);
+
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                
+
+                                d1 = reader.GetDecimal("Income");
+                                d2 = reader.GetDecimal("SummedAmnt");
+
+
+                                res = new KeyValuePair<decimal, decimal>(d1, d2);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error occurred: " + ex.Message);
+            }
+
+            return res;
+        }
     }
 
 

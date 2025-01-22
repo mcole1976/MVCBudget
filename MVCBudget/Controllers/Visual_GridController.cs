@@ -148,7 +148,9 @@ namespace MVCBudget.Controllers
                 }
 
 
-                return Json(new { success = true, message = "Entry saved successfully" });
+                 KeyValuePair<decimal,decimal> dataBack  = fnCalcNetIncome(Id);
+
+                return Json(new { Income = Income, Costs = dataBack.Value });
             }
             catch
             {
@@ -156,10 +158,11 @@ namespace MVCBudget.Controllers
             }
         }
 
-
-
-
-
+        private KeyValuePair<decimal,decimal > fnCalcNetIncome(int id)
+        {
+            KeyValuePair<decimal, decimal> r = MYSQLAccess.MakeRetrunDataKVP(id); ;
+            return r;
+        }
 
         [HttpPost]
         public JsonResult DeleteEntry([FromBody] JsonDocument d)
