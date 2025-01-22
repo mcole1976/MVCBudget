@@ -1,10 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MVCBudget.Models;
 using MVCBudget.Service;
-using Newtonsoft.Json.Linq;
-using System.Diagnostics;
-using System.Reflection;
 using System.Text.Json;
 
 namespace MVCBudget.Controllers
@@ -12,7 +8,7 @@ namespace MVCBudget.Controllers
     public class Visual_GridController : Controller
     {
         // GET: Visual_GridController
-        
+
         [HttpPost]
         public ActionResult Delete(IFormCollection collection)
         {
@@ -32,7 +28,7 @@ namespace MVCBudget.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-       
+
         public ActionResult Index()
         {
             var model = new Visual_Grid();
@@ -44,20 +40,20 @@ namespace MVCBudget.Controllers
         {
             // Retrieve model based on the selected ID
 
-            Visual_Grid v = new Visual_Grid();
-            List<Income_Lots> resultSet = new List<Income_Lots>(); 
+            Visual_Grid v = new();
+            List<Income_Lots> resultSet = new();
             if (Selected != 0)
             {
                 v.Selected = Selected;
                 v.SetSelected(v.Selected);
                 resultSet = v.Income;
-                
+
             }
             if (resultSet.Count == 0)
             { // Return a message indicating no data found
                 return Json(new { Message = "No data found" });
             }
-                return Json(resultSet);
+            return Json(resultSet);
         }
 
 
@@ -68,7 +64,7 @@ namespace MVCBudget.Controllers
         {
             // Retrieve model based on the selected ID
 
-            Visual_Grid v = new Visual_Grid();
+            Visual_Grid v = new();
             v.Selected = grid.Selected;
             v.SetSelected(v.Selected);
             return View("Index", v);
@@ -94,11 +90,11 @@ namespace MVCBudget.Controllers
             try
             {
                 var data = d.RootElement;
-                var entryId = data.GetProperty("entryId").GetInt32(); 
+                var entryId = data.GetProperty("entryId").GetInt32();
                 var amount = data.GetProperty("amount").GetDecimal();
 
                 MYSQLAccess.Amend_Cost(entryId, amount);
-                
+
                 KeyValuePair<decimal, decimal> dataBack = fnCalcNetIncome(entryId);
 
                 return Json(new { Income = dataBack.Key, Costs = dataBack.Value });
@@ -106,7 +102,7 @@ namespace MVCBudget.Controllers
             }
             catch
             {
-                return Json(new { success = true, message = "Entry saved successfully" }); 
+                return Json(new { success = true, message = "Entry saved successfully" });
             }
         }
 
@@ -128,7 +124,7 @@ namespace MVCBudget.Controllers
                 conv = int.TryParse(entryId, out Id);
                 if (conv)
                 {
-                    conv = decimal.TryParse(amount, out  Income);  
+                    conv = decimal.TryParse(amount, out Income);
                 }
                 if (Income > -1)
                 {
@@ -139,7 +135,7 @@ namespace MVCBudget.Controllers
                 {
 
                 }
-                 KeyValuePair<decimal,decimal> dataBack  = fnCalcNetIncome(Id);
+                KeyValuePair<decimal, decimal> dataBack = fnCalcNetIncome(Id);
 
                 return Json(new { Income = Income, Costs = dataBack.Value });
             }
@@ -149,7 +145,7 @@ namespace MVCBudget.Controllers
             }
         }
 
-        private KeyValuePair<decimal,decimal > fnCalcNetIncome(int id)
+        private KeyValuePair<decimal, decimal> fnCalcNetIncome(int id)
         {
             KeyValuePair<decimal, decimal> r = MYSQLAccess.MakeRetrunDataKVP(id); ;
             return r;
@@ -162,11 +158,11 @@ namespace MVCBudget.Controllers
             var entryId = data.GetProperty("entryId").GetInt32();
             MYSQLAccess.DeleteCost(entryId);
 
-            return Json(new { success = true, message = "Entry deleted successfully" }); 
+            return Json(new { success = true, message = "Entry deleted successfully" });
         }
 
 
-            [HttpPost]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(Visual_Grid model, IFormCollection collection)
         {
@@ -179,7 +175,7 @@ namespace MVCBudget.Controllers
 
 
                 int Id = 0;
-                
+
                 bool conv = false;
 
                 conv = int.TryParse(entryId, out Id);
@@ -211,11 +207,11 @@ namespace MVCBudget.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit( IFormCollection collection)
+        public ActionResult Edit(IFormCollection collection)
         {
             try
             {
-                string entryId = collection["item.Entry_id"].ToString(); 
+                string entryId = collection["item.Entry_id"].ToString();
                 //var descriptionTime = collection["item.Description_time"].ToString(); 
                 //var entryName = collection["item.Entry_name"].ToString(); 
                 string amountString = collection["item.Amount"].ToString();
@@ -225,23 +221,24 @@ namespace MVCBudget.Controllers
                 decimal cost = 0;
                 bool conv = false;
 
-                conv = true;int.TryParse(entryId, out Id);
+                conv = true; int.TryParse(entryId, out Id);
                 if (conv)
                 {
                     conv = decimal.TryParse(amountString, out cost);
                 }
-                else 
+                else
                 {
                     return RedirectToAction(nameof(Index));
                 }
-                if (conv && cost > -1) {
+                if (conv && cost > -1)
+                {
                     MYSQLAccess.Amend_Cost(Id, cost);
                 }
                 else
                 {
 
                 }
-                
+
 
                 return RedirectToAction(nameof(Index));
             }

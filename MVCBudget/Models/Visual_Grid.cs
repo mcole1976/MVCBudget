@@ -1,5 +1,4 @@
 ﻿using MVCBudget.Service;
-using MVCBudget.Models;
 
 namespace MVCBudget.Models
 {
@@ -31,8 +30,8 @@ namespace MVCBudget.Models
             Income_Lots = MYSQLAccess.GetMontlyIncome();
             Income = MYSQLAccess.GetIncomeLotsData();
 
-            
-            
+
+
         }
 
         public void SetSelected(int selected)
@@ -40,17 +39,18 @@ namespace MVCBudget.Models
             Income = Income.Where(i => i.Id == selected).ToList();
             bool check = false;
             decimal dC;
-            var tc = (from f in Income   select f.Amount).Sum().ToString();
+            var tc = (from f in Income select f.Amount).Sum().ToString();
             check = decimal.TryParse(tc, out dC);
             if (check) { Total_costs = dC; }
-            
+
             var dec = (from f in Income where f.Id == selected select f.Income).FirstOrDefault().ToString();
             check = false;
             dC = -1;
             bool t = decimal.TryParse(dec.ToString(), out dC);
-            if (t) {
+            if (t)
+            {
                 Income_amount = dC;
-                    }
+            }
 
             Net_income = Income_amount - Total_costs;
 

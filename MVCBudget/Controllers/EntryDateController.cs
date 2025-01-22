@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MVCBudget.Models;
 using MVCBudget.Service;
 
@@ -20,7 +19,7 @@ namespace MVCBudget.Controllers
                 DateOnly = DateOnly.FromDateTime(DateTime.Today),
                 Period = MYSQLAccess.GetDictionaryData(),
                 PreviousEntries = orderedEntries
-            }; 
+            };
             return View(model);
         }
 
@@ -43,12 +42,12 @@ namespace MVCBudget.Controllers
         {
             try
             {
-                
-                
-                    var entryDate = new EntryDate();
-                    Service.MYSQLAccess.InsertPeriaod_and_Date(model);
-                
-                
+
+
+                var entryDate = new EntryDate();
+                Service.MYSQLAccess.InsertPeriaod_and_Date(model);
+
+
             }
             catch
             {

@@ -1,16 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MVCBudget.Models;
-using MVCBudget.Service;
 
 namespace MVCBudget.Controllers
-{ 
-  
+{
+
     public class EntryController : Controller
     {
 
-        private readonly Service.Service _entryService; 
-       // public EntryController(Service.Service entryService) { _entryService = entryService; }
+        private readonly Service.Service _entryService;
+        // public EntryController(Service.Service entryService) { _entryService = entryService; }
 
 
 
@@ -47,7 +45,7 @@ namespace MVCBudget.Controllers
             {
                 return View();
             }
-            
+
         }
 
         // GET: EntryController1/Edit/5

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MVCBudget.Models;
 using MVCBudget.Service;
 
@@ -27,7 +26,7 @@ namespace MVCBudget.Controllers
 
         private Dictionary<string, decimal> fnSetData()
         {
-           Dictionary<string,decimal> res = new Dictionary<string,decimal>();
+            Dictionary<string, decimal> res = new();
             res.Add("Add Data", 0);
             return res;
         }
@@ -51,15 +50,15 @@ namespace MVCBudget.Controllers
         {
             try
             {
-                var stringKeys = collection["StringKeys"]; 
-                var decimalValues = collection["DecimalValues"]; 
-                Dictionary<string, decimal> periodData = new Dictionary<string, decimal>(); 
-                for (int i = 0; i < stringKeys.Count; i++) 
-                { 
-                    if (decimal.TryParse(decimalValues[i], out decimal decimalValue)) 
-                    { 
-                        periodData[stringKeys[i]] = decimalValue; 
-                    } 
+                var stringKeys = collection["StringKeys"];
+                var decimalValues = collection["DecimalValues"];
+                Dictionary<string, decimal> periodData = new();
+                for (int i = 0; i < stringKeys.Count; i++)
+                {
+                    if (decimal.TryParse(decimalValues[i], out decimal decimalValue))
+                    {
+                        periodData[stringKeys[i]] = decimalValue;
+                    }
                 }
 
                 model.Period_Data = periodData;

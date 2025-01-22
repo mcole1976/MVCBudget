@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MVCBudget.Models;
 using MVCBudget.Service;
 
@@ -40,13 +39,13 @@ namespace MVCBudget.Controllers
         // POST: IncomeController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create( Income model, IFormCollection collection)
+        public ActionResult Create(Income model, IFormCollection collection)
         {
             try
             {
                 Service.MYSQLAccess.InsertIncome(model);
                 return RedirectToAction(nameof(Index));
-                
+
             }
             catch
             {
@@ -67,7 +66,7 @@ namespace MVCBudget.Controllers
         // POST: IncomeController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit( IFormCollection collection)
+        public ActionResult Edit(IFormCollection collection)
         {
             try
             {
@@ -82,16 +81,16 @@ namespace MVCBudget.Controllers
                     conv = decimal.TryParse(incomeAmount, out income_total);
 
                 }
-                else 
+                else
                 {
                     return RedirectToAction("Index", "Visual_Grid");
                 }
                 if (conv)
                 {
                     MYSQLAccess.AmendIncome(entry_ID, income_total);
-                    return RedirectToAction("Index", "Visual_Grid"); 
+                    return RedirectToAction("Index", "Visual_Grid");
                 }
-               
+
             }
             catch
             {
@@ -114,10 +113,9 @@ namespace MVCBudget.Controllers
             try
             {
                 string entryId = collection["entry.ID"].ToString();
-                
+
 
                 int entry_ID = 0;
-                decimal income_total = 0;
                 bool conv = int.TryParse(entryId, out entry_ID);
                 if (conv)
                 {
