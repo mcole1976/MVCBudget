@@ -93,19 +93,16 @@ namespace MVCBudget.Controllers
 
             try
             {
-                //string entryId = collection["item.Entry_id"].ToString();
-                ////var descriptionTime = collection["item.Description_time"].ToString(); 
-                ////var entryName = collection["item.Entry_name"].ToString(); 
-                //string amountString = collection["item.Amount"].ToString();
                 var data = d.RootElement;
                 var entryId = data.GetProperty("entryId").GetInt32(); 
                 var amount = data.GetProperty("amount").GetDecimal();
 
-                    MYSQLAccess.Amend_Cost(entryId, amount);
+                MYSQLAccess.Amend_Cost(entryId, amount);
                 
+                KeyValuePair<decimal, decimal> dataBack = fnCalcNetIncome(entryId);
 
+                return Json(new { Income = dataBack.Key, Costs = dataBack.Value });
 
-                return Json(new { success = true, message = "Entry saved successfully" }); 
             }
             catch
             {
@@ -133,10 +130,6 @@ namespace MVCBudget.Controllers
                 {
                     conv = decimal.TryParse(amount, out  Income);  
                 }
-
-
-                
-
                 if (Income > -1)
                 {
 
@@ -146,8 +139,6 @@ namespace MVCBudget.Controllers
                 {
 
                 }
-
-
                  KeyValuePair<decimal,decimal> dataBack  = fnCalcNetIncome(Id);
 
                 return Json(new { Income = Income, Costs = dataBack.Value });
