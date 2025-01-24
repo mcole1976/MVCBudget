@@ -92,10 +92,10 @@ namespace MVCBudget.Controllers
                 var data = d.RootElement;
                 var entryId = data.GetProperty("entryId").GetInt32();
                 var amount = data.GetProperty("amount").GetDecimal();
-
+                var id = data.GetProperty("id").GetInt32();
                 MYSQLAccess.Amend_Cost(entryId, amount);
 
-                KeyValuePair<decimal, decimal> dataBack = fnCalcNetIncome(entryId);
+                KeyValuePair<decimal, decimal> dataBack = fnCalcNetIncome(id);
 
                 return Json(new { Income = dataBack.Key, Costs = dataBack.Value });
 

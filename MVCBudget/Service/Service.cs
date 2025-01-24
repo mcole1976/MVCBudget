@@ -17,26 +17,7 @@ namespace MVCBudget.Service
             command.Parameters.AddWithValue("@p_Amount", entry.Amount);
             await command.ExecuteNonQueryAsync();
         }
-        //public Dictionary<string, int> GetEntryDictionary()
-        //{
-        //    var entries = new Dictionary<string, int>();
-        //    using (var connection = new MySqlConnection(_connectionString))
-        //    {
-        //        connection.Open();
-        //        using (
-        //            var command = new MySqlCommand("SELECT Id, Description FROM Entry", connection))
-        //        using (var reader = command.ExecuteReader())
-        //        {
-        //            while (reader.Read())
-        //            {
-        //                entries.Add(reader["Description"].ToString(), (int)reader["Id"]);
-
-        //            }
-
-        //            return entries;
-        //        }
-        //    }
-        //}
+        
 
     }
 }
