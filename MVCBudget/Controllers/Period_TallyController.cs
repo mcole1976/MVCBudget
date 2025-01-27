@@ -72,6 +72,10 @@ namespace MVCBudget.Controllers
         }
 
         // GET: Period_TallyController1/Edit/5
+
+
+
+
         public ActionResult Edit(int id)
         {
             return View();

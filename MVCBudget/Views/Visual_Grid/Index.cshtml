@@ -39,7 +39,7 @@
         <select asp-for="Selected" id ="incomeDropdown" class="form-control" asp-items="@(new SelectList(Model.Income_Lots, "Key", "Value"))"></select>
         <span asp-validation-for="Selected" class="text-danger"></span>
         <br />
-        <input type="submit" value="Show Values" />
+        @* <input type="submit" value="Show Values" /> *@
     </div>
 }
 <br />
@@ -104,6 +104,14 @@
 
             });
         });
+
+
+        $(document).on('click', '#addExtraData',function()
+        {
+            var entryId = document.getElementById('hiddenID').innerHTML ;
+            fnColateExtraData(entryId);
+        }
+        );
 
     function updateTable(data) {
         console.log(data);
@@ -219,6 +227,70 @@
         , error: function(error) { console.error('Error deleting entry:', error); } 
         });
     }
+    function fnColateExtraData(entryID)
+    {
+        console.log(entryID);
+        var containers = document.getElementsByClassName('FormExtras');
+        console.log(containers);
+        var data = [];
+
+         for (var i = 0; i < containers.length; i++) {
+            var description = containers[i].getElementsByClassName('tv')[0].value;
+            var decimalValue = containers[i].getElementsByClassName('dv')[0].value;
+
+            // Add an overarching ID to each dataset (example with static ID)
+            var entryId = entryID; // Replace this with your dynamic/static ID logic
+            data.push({
+                entryId: entryId,
+                description: description,
+                amount: parseFloat(decimalValue)
+            });
+        }
+
+        console.log(data);
+
+        for (var j = 0; j < data.length; j++) {
+            (function(index) {
+                fetch('/Visual_Grid/ExtraData', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data[index])
+                })
+                .then(response => response.json())
+                .then(result => {
+                    console.log('Success:', result);
+                    fnSetVal(response);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            })(j);
+        }
+
+
+
+
+
+        // $.ajax({
+        //     url: '/Visual_Grid/ExtraData',
+        //     type: 'POST',
+        //     contentType: 'application/json',
+        //     data: JSON.stringify(data),
+        //     success: function (response) {
+        //         console.log('Data saved successfully:', response);
+        //         fnSetVal(response);
+        //     },
+        //     error: function (error) {
+        //         console.error('Error saving data:', error);
+        //     }
+        // });
+
+
+
+
+    }
 
 
 </script>
@@ -260,6 +332,34 @@
     </div>
  
 </div>
+<div>
+    <h4>Add Extra Expenses</h4>
+    <div class="col-12">
+        <button type="button" class="btn-dark" id="addControl">Add More Controls</button>
+    </div>
+    <form class="FormExtras">
+
+    <div class="col-12"  id="dynamicControls">
+       
+        
+            <div id="ExtraControls" class="col-12">
+                <input type="text" id="" name="StringKeys" class="tv" value="" />
+                <input type="text" name="DecimalValues" class="dv" value="" />
+            </div>
+        
+    </div>
+    <div class="col-12">
+            <button type="button" class="btn-light" id="addExtraData">Add Extra Data</button>
+    </div>
+    </form>
+    
+    
+</div>
+
+
+@section scripts {
+     <script src="~/js/indextp.js" type="text/javascript"></script>
+}
 
 
     

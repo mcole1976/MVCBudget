@@ -10,13 +10,25 @@ html {
 .btn {
     color: white;
 }
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    btn-dark, btn-light {
+        margin: 3px;
+        padding: 2px;
+    }
+    .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+        box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    }
+#dynamicControls {
+    margin: 3px;
+    padding: 2px;
+}
+input {
+    margin: 3px;
+    padding: 2px;
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {

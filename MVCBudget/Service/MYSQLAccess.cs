@@ -8,6 +8,36 @@ namespace MVCBudget.Service
         private static string _connectionString;
         public static string GetConnectionString() { return _connectionString; }
         public static void SetConnectionString(string connectionString) { _connectionString = connectionString; }
+
+        public static bool InsertEntryWithIntermediate(Tuple<int, string, decimal>  model)
+        {
+            bool ret = true;
+            try
+            {
+                using var connection = new MySqlConnection(_connectionString);
+                connection.Open();
+               
+                using var command = new MySqlCommand("AddEntry", connection);
+                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@entryDescription", model.Item2);
+                command.Parameters.AddWithValue("@entryAmount",model.Item3);
+                command.Parameters.AddWithValue("@periodAndDateId", model.Item1);
+
+
+                    int rowsAffected = command.ExecuteNonQuery();
+
+                    Console.WriteLine(rowsAffected);
+                
+            }
+            catch (Exception)
+            {
+                ret = false;
+            }
+
+            return ret;
+
+        }
+
         public static bool InsertEntryWithIntermediate(Period_Tally model)
         {
             bool ret = true;

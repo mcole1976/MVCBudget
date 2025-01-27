@@ -2,6 +2,7 @@
 using MVCBudget.Models;
 using MVCBudget.Service;
 using System.Text.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MVCBudget.Controllers
 {
@@ -116,6 +117,7 @@ namespace MVCBudget.Controllers
                 var data = d.RootElement;
                 var entryId = data.GetProperty("entryId").ToString();
                 var amount = data.GetProperty("amount").ToString();
+                var desc = data.GetProperty("description").ToString();
 
                 bool conv = false;
                 decimal Income = 0;
@@ -163,28 +165,62 @@ namespace MVCBudget.Controllers
 
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(Visual_Grid model, IFormCollection collection)
+        public JsonResult ExtraData([FromBody] JsonDocument d)
         {
             try
             {
-                string entryId = collection["item.Entry_id"].ToString();
-                //var descriptionTime = collection["item.Description_time"].ToString(); 
-                //var entryName = collection["item.Entry_name"].ToString(); 
-                //string amountString = collection["item.Amount"].ToString();
-
+                var data = d.RootElement;
+                var entryId = data.GetProperty("entryId").ToString();
+                var amount = data.GetProperty("amount").ToString();
+                var desc = data.GetProperty("description").ToString();
 
                 int Id = 0;
+                decimal  cost = 0;
 
                 bool conv = false;
 
                 conv = int.TryParse(entryId, out Id);
+                if (conv)
+                {
+                    conv = decimal.TryParse(amount, out  cost);
+                }
 
                 if (conv)
                 {
-                    //MYSQLAccess.DeleteCost(Id);
+
+                    var entry = Tuple.Create(Id, desc, cost);
+                    MYSQLAccess.InsertEntryWithIntermediate(entry);
                 }
 
+                KeyValuePair<decimal, decimal> dataBack = fnCalcNetIncome(Id);
+
+                return Json(new { Income = dataBack.Key, Costs = dataBack.Value });
+            }
+            catch
+            {
+                return Json(new { success = true, message = "Entry saved successfully" });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(Period_Tally model, IFormCollection collection)
+        {
+            try
+            {
+                var stringKeys = collection["StringKeys"];
+                var decimalValues = collection["DecimalValues"];
+                Dictionary<string, decimal> periodData = new();
+                for (int i = 0; i < stringKeys.Count; i++)
+                {
+                    if (decimal.TryParse(decimalValues[i], out decimal decimalValue))
+                    {
+                        periodData[stringKeys[i]] = decimalValue;
+                    }
+                }
+
+                model.Period_Data = periodData;
+                MYSQLAccess.InsertEntryWithIntermediate(model);
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -192,18 +228,6 @@ namespace MVCBudget.Controllers
                 return View();
             }
         }
-
-        // GET: Visual_GridController/Edit/5
-
-
-        // POST: Visual_GridController/Edit/5
-
-
-        // GET: Visual_GridController/Delete/5
-
-
-        // POST: Visual_GridController/Delete/5
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
