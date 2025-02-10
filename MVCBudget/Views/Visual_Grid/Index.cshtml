@@ -53,7 +53,6 @@
     $(document).ready(function () 
        
        { 
-           dropdownChanged = false;
            $('#incomeDropdown').change(function () { 
                dropdownChanged = true;
                var selectedValue = $(this).val(); 
@@ -95,7 +94,12 @@
         $(document).on('click', '.amend_I',
         function()
             {
+
+                 var element = document.getElementById('hiddenID');
+
                 var entryId = document.getElementById('hiddenID').innerHTML ;
+
+                //
                 var amount = $('#incomeInput').val();
                 //saveEntry(entryId, amount);
                 console.log(entryId);
@@ -104,78 +108,279 @@
 
             });
         });
+        function makeGrid()
+        {
+            var entryId = document.getElementById('hiddenID').innerHTML ;
 
+            $.ajax({ url: '@Url.Action("Change", "Visual_Grid")',
+            type: 'GET',
+            data: { Selected: entryId },
+            success: function (data) { console.log("Received data:", data);
+            if (data.Message && data.Message === "No data found")
+            { window.location.href = '@Url.Action("Index", "Visual_Grid")'; }
+            else
+            { updateTable(data); } }, error: function (error) { console.log("Error:", error); } });
+        }
 
         $(document).on('click', '#addExtraData',function()
         {
+
+            var element = document.getElementById('hiddenID');
+
             var entryId = document.getElementById('hiddenID').innerHTML ;
+
+            
+            if (entryId == "") 
+            {
+                 entryId = $('#incomeDropdown').val();
+            }
+                    
+
+
+
             fnColateExtraData(entryId);
         }
         );
 
-    function updateTable(data) {
-        console.log(data);
-        var index = 0;
-        var ii = {};
-         var rows ='';
-         var heads = '';
-         var income = 0;
-         var summedcosts = 0;
-         var main_id = 0;
+    function updateTable(data) 
+    {
+        
+        const table = document.getElementById('dataTable');
+        const incomeInput = document.getElementById('incomeInput');
+        const costInput = document.getElementById('costInput');
+        const netInput = document.getElementById('netInput');
+        const hiddenID = document.getElementById('hiddenID');
 
-    // Assuming you have a table with an id of 'dataTable' 
-       data.forEach(item => { if (item && item.entry_id && item.description_time && item.entry_name && item.amount && item.income) 
-           { 
-               if (index == 0)
-               {
-                    heads += '<thead>';
-                    heads  += '<tr>';
-                    heads   +='<th scope="col">Entry ID</th>';
-                    heads   +='<th scope="col">Decription Time</th>';
-                    heads   += '<th scope="col">Entry Name</th>';
-                    heads   +='<th scope="col">Amount</th>';
-                    heads   +='<th scope="col">Income</th>';
-                    heads   +='<th scope="col">Save</th>';
-                    heads   +='<th scope="col">Delete</th>';
-                    heads   += '</tr>';
-                    heads   += '</thead>';
-                    
-                    rows += heads;
-                    income = item.income;
-                    main_id = item.id
-                    document.getElementById('hiddenID').innerHTML =main_id;
-               }
-               rows += '<tr>'; 
-               rows += '<td>' + item.entry_id + '</td>'; 
-               rows += '<td>' + item.description_time + '</td>'; 
-               rows += '<td>' + item.entry_name + '</td>'; 
-               rows += '<td> <input type="text" class="amountInput" value="' + item.amount + '"></td>';
-               rows += '<td>' + item.income + '</td>'; 
-               rows += '<td> <button type="button" class="btn btn-primary saveButton" data-entry-id="' + item.entry_id + '" data-amount="' + item.amount + '">Save</button> </td>';
-               rows += '<td><button type="button" class="btn btn-primary deleteButton" data-entry-id="' + item.entry_id + '">Delete</button></td>';
-               rows += '</tr>'; 
-               console.log(item); 
-               summedcosts += item.amount;
-               index++;
-           }
-           else { console.error('Invalid item:', item); } });
-            $('#dataTable').html(rows);
-            $('#incomeInput').val(income);
-            $('#costInput').val(summedcosts);
-            $('#netInput').val(income - summedcosts);
+         if (!data || !Array.isArray(data) || data.length === 0) 
+         {
+            // Clear the table
+            table.innerHTML = ''; // Clear the table
+            incomeInput.value = '';
+            costInput.value = '';
+            netInput.value = '';
+            hiddenID.innerHTML = '';
+            console.log("No data available. Table has been cleared.");
+            return; // Exit the function early
+        }       
+
+        // Build the table header
+        const buildTableHeader = () => 
+        {
+            return `
+                <thead>
+                    <tr>
+                        <th scope="col">Entry ID</th>
+                        <th scope="col">Description Time</th>
+                        <th scope="col">Entry Name</th>
+                        <th scope="col">Amount</th>
+                        <th scope="col">Income</th>
+                        <th scope="col">Save</th>
+                        <th scope="col">Delete</th>
+                    </tr>
+                </thead>
+            `;
+        };
+
+        const buildTableRow = (item) => 
+        {
+            return `
+                <tr>
+                    <td>${item.entry_id}</td>
+                    <td>${item.description_time}</td>
+                    <td>${item.entry_name}</td>
+                    <td><input type="text" class="amountInput" value="${item.amount}"></td>
+                    <td>${item.income}</td>
+                    <td><button type="button" class="btn btn-primary saveButton" data-entry-id="${item.entry_id}" data-amount="${item.amount}">Save</button></td>
+                    <td><button type="button" class="btn btn-primary deleteButton" data-entry-id="${item.entry_id}">Delete</button></td>
+                </tr>
+            `;
+        };
+
+        // Calculate total costs
+        const calculateTotalCosts = (data) => 
+        {
+            return data.reduce((sum, item) => sum + item.amount, 0);
+        };
+
+        table.innerHTML = '';
+
+        // Build the table
+        let rows = buildTableHeader();
+        let summedcosts = 0;
+        let income = 0;
+        let main_id = 0;
+
+        
+        data.forEach((item, index) => 
+        {
+            if (item && item.entry_id && item.description_time && item.entry_name && item.amount && item.income) 
+            {
+                if (index === 0) 
+                {
+                income = item.income;
+                main_id = item.id;
+                hiddenID.innerHTML = main_id;
+                }
+                rows += buildTableRow(item);
+                summedcosts += item.amount;
+            } 
+            else 
+            {
+                console.error('Invalid item:', item);
+            }
+        });
+
+        table.innerHTML = rows;
+        incomeInput.value = income;
+        costInput.value = summedcosts;
+        netInput.value = income - summedcosts;
+       
 
     }
-    function saveIncome(entryId, amount)
+    async function saveIncome(entryId, amount)
     {
         console.log('Data:', { entryId: entryId, amount: amount });
-        $.ajax(
+
+        const url = '/Visual_Grid/Income_Amend';
+        const type = 'POST';
+        const data = { entryId, amount };
+
+        try 
+        {
+            const response = await makeAjaxCall(url, type, data);
+            console.log('Entry saved successfully:', response);
+        } 
+        catch (error) 
+        {
+            console.error('Error saving entry:', error);
+        }
+
+
+        // $.ajax(
+        //     { url: '/Visual_Grid/Income_Amend'
+        //     , type: 'POST'
+        //     , contentType: 'application/json'
+        //     , data: JSON.stringify({ entryId: entryId, amount: amount })
+        //     , success: function(response)
+        //         { 
+        //             console.log('Entry saved successfully:', response); 
+        //             fnSetVal(response);
+        //             // document.getElementById('incomeInput').value = response.income;
+        //             // document.getElementById('costInput').value = response.costs;
+        //             // document.getElementById('netInput').value =  response.income - response.costs;
+        //         }
+        //     , error: function(error)
+        //         { console.error('Error saving entry:', error); }
+
+
+        // });
+
+    }
+
+    async function saveEntry(entryId, amount, id)
+    {
+        const url = '/Visual_Grid/Make';
+        const type = 'POST';
+        const data = JSON.stringify({ entryId: entryId, amount: amount, id: id });
+
+        console.log('Data:', { entryId: entryId, amount: amount });
+
+        try 
+        {
+            const response = await makeAjaxCall(url, type, JSON.stringify(data));
+            console.log('Entry saved successfully:', response);
+             // Ensure this runs only after the response is received
+        } 
+        catch (error) 
+        {
+        console.error('Error saving entry:', error);
+        }
+
+        // $.ajax(
+        //     { url: '/Visual_Grid/Make'
+        //     , type: 'POST'
+        //     , contentType: 'application/json'
+        //     , data: JSON.stringify({ entryId: entryId, amount: amount, id: id })
+        //     , success: function(response)
+        //         { console.log('Entry saved successfully:', response);
+        //         fnSetVal(response);
+        //         }
+
+        //     , error: function(error)
+        //         { console.error('Error saving entry:', error); }
+
+
+        // });
+
+    }
+
+
+
+
+        function makeAjaxCall(url, type, data = null) {
+        return new Promise((resolve, reject) => {
+        $.ajax({
+            url: url,
+            type: type,
+            contentType: 'application/json',
+            data: data,
+            success: function(response) 
+            {
+                resolve(response);
+                fnSetVal(response);
+            },
+            error: function(error) {
+                reject(error);
+            }
+        });
+    });
+    }
+
+
+
+    function fnSetVal(response) {
+        document.getElementById('incomeInput').value = response.income;
+        document.getElementById('costInput').value = response.costs;
+        document.getElementById('netInput').value = response.income - response.costs;
+    }   
+
+
+    
+
+    function deleteEntry(entryId) 
+    { 
+        console.log('Delete button clicked for entry ID:', entryId); 
+        $.ajax({ url: '/Visual_Grid/DeleteEntry'
+        , type: 'POST'
+        , contentType: 'application/json'
+        , data: JSON.stringify({ entryId: entryId })
+        , success: function(response) 
+        { 
+            console.log('Entry deleted successfully:', response); 
+            makeGrid();
+            fnSetIncome();
+        
+        }
+        , error: function(error) { console.error('Error deleting entry:', error); } 
+        });
+      
+
+    }
+
+    function fnSetIncome()
+    {
+        var entryId = document.getElementById('hiddenID').innerHTML ;
+        var amount = $('#incomeInput').val();
+
+        var entryId = document.getElementById('hiddenID').innerHTML ;
+         $.ajax(
             { url: '/Visual_Grid/Income_Amend'
             , type: 'POST'
             , contentType: 'application/json'
             , data: JSON.stringify({ entryId: entryId, amount: amount })
             , success: function(response)
-                { 
-                    console.log('Entry saved successfully:', response); 
+                {
+                    console.log('Entry saved successfully:', response);
                     fnSetVal(response);
                     // document.getElementById('incomeInput').value = response.income;
                     // document.getElementById('costInput').value = response.costs;
@@ -186,51 +391,11 @@
 
 
         });
-
-    }
-    function fnSetVal(response) {
-        document.getElementById('incomeInput').value = response.income;
-        document.getElementById('costInput').value = response.costs;
-        document.getElementById('netInput').value = response.income - response.costs;
-    }   
-
-
-    function saveEntry(entryId, amount, id) 
-    { 
-        console.log('Data:', { entryId: entryId, amount: amount }); 
-        $.ajax(
-            { url: '/Visual_Grid/Make'
-            , type: 'POST'
-            , contentType: 'application/json'
-            , data: JSON.stringify({ entryId: entryId, amount: amount, id: id })
-            , success: function(response) 
-                { console.log('Entry saved successfully:', response); 
-                fnSetVal(response);
-                }
-
-            , error: function(error) 
-                { console.error('Error saving entry:', error); } 
-        
-        
-        });
-    
-    }
-
-    function deleteEntry(entryId) 
-    { 
-        console.log('Delete button clicked for entry ID:', entryId); 
-        $.ajax({ url: '/Visual_Grid/DeleteEntry'
-        , type: 'POST'
-        , contentType: 'application/json'
-        , data: JSON.stringify({ entryId: entryId })
-        , success: function(response) { console.log('Entry deleted successfully:', response); }
-        , error: function(error) { console.error('Error deleting entry:', error); } 
-        });
     }
     function fnColateExtraData(entryID)
     {
         console.log(entryID);
-        var containers = document.getElementsByClassName('FormExtras');
+        var containers = document.getElementsByClassName('frmInputs');
         console.log(containers);
         var data = [];
 
@@ -261,7 +426,9 @@
                 .then(response => response.json())
                 .then(result => {
                     console.log('Success:', result);
-                    fnSetVal(response);
+                    fnSetVal(result);
+                     makeGrid();
+                     fnClearExtra();
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -270,26 +437,23 @@
         }
 
 
+        
+       
 
 
+    }
+    function fnClearExtra()
+    {
+        var stringKeysElements = document.getElementsByName('StringKeys');
+        for (var i = 0; i < stringKeysElements.length; i++) {
+            stringKeysElements[i].value = "";
+        }
 
-        // $.ajax({
-        //     url: '/Visual_Grid/ExtraData',
-        //     type: 'POST',
-        //     contentType: 'application/json',
-        //     data: JSON.stringify(data),
-        //     success: function (response) {
-        //         console.log('Data saved successfully:', response);
-        //         fnSetVal(response);
-        //     },
-        //     error: function (error) {
-        //         console.error('Error saving data:', error);
-        //     }
-        // });
-
-
-
-
+        // Reset textboxes with name="DecimalValues"
+        var decimalValuesElements = document.getElementsByName('DecimalValues');
+        for (var i = 0; i < decimalValuesElements.length; i++) {
+            decimalValuesElements[i].value = "";
+        }
     }
 
 
@@ -334,15 +498,15 @@
 </div>
 <div>
     <h4>Add Extra Expenses</h4>
-    <div class="col-12">
-        <button type="button" class="btn-dark" id="addControl">Add More Controls</button>
-    </div>
+    @* <div class="col-12">
+        <button type="button" class="btn-dark" id="controllAdd">Add More Controls</button>
+    </div> *@
     <form class="FormExtras">
 
-    <div class="col-12"  id="dynamicControls">
+        <div class="col-12 frmInputs" id="dynamicControls">
        
         
-            <div id="ExtraControls" class="col-12">
+            <div class="col-12" id="ExtraControls" >
                 <input type="text" id="" name="StringKeys" class="tv" value="" />
                 <input type="text" name="DecimalValues" class="dv" value="" />
             </div>
@@ -357,9 +521,6 @@
 </div>
 
 
-@section scripts {
-     <script src="~/js/indextp.js" type="text/javascript"></script>
-}
 
 
     

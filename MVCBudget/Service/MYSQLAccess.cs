@@ -161,13 +161,14 @@ namespace MVCBudget.Service
             {
                 using var connection = new MySqlConnection(_connectionString);
                 connection.Open();
-                using var command = new MySqlCommand("InsertPeriodAndDate", connection);
+                using var command = new MySqlCommand("InsertPeriodAndDateWI", connection);
                 command.CommandType = System.Data.CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@p_date", entryDate.DateOnly);
                 command.Parameters.AddWithValue("@p_period", entryDate.Selected);
-
+                command.Parameters.AddWithValue("@p_income", entryDate.Income);
 
                 int rowsAffected = command.ExecuteNonQuery();
+
 
                 Console.WriteLine(rowsAffected);
             }
@@ -341,6 +342,37 @@ namespace MVCBudget.Service
             return ret;
 
         }
+
+        internal static bool InsertIncome(int id, decimal amount)
+        {
+            bool ret = true;
+            try
+            {
+                using var connection = new MySqlConnection(_connectionString);
+                connection.Open();
+                using var command = new MySqlCommand("InsertIncome", connection);
+                command.CommandType = System.Data.CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@amount", amount);
+                command.Parameters.AddWithValue("@val_period_and_date_Id",id);
+
+
+                int rowsAffected = command.ExecuteNonQuery();
+
+                Console.WriteLine(rowsAffected);
+            }
+            catch (Exception)
+            {
+                ret = false;
+            }
+
+            return ret;
+
+        }
+
+
+
+
+
         internal static bool AmendIncome(int entryId, decimal income)
         {
             bool ret = true;

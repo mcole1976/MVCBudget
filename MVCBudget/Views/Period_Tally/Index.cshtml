@@ -26,8 +26,8 @@
         <div id="dynamicControls"> 
             @foreach (var item in Model.Period_Data) 
             { 
-                <div> <input type="text" name="StringKeys" value="@item.Key" /> 
-                    <input type="text" name="DecimalValues" value="@item.Value" /> 
+                <div> <input type="text" id="StringKeys" value="@item.Key" /> 
+                    <input type="text" id="DecimalValues" value="@item.Value" /> 
                 </div> 
             } 
         </div> 
@@ -38,4 +38,4 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
-@section scripts { <script src="~/js/indextp.js" type="text/javascript"></script>}
+@* @section scripts { <script src="~/js/indextp.js" type="text/javascript"></script>} *@

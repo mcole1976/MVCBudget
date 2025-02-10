@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MVCBudget.Models;
 using MVCBudget.Service;
+using NuGet.Protocol;
 using System.Text.Json;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -85,16 +86,32 @@ namespace MVCBudget.Controllers
 
         // POST: Visual_GridController/Create
         [HttpPost]
-        public JsonResult Make([FromBody] JsonDocument d)
+        public JsonResult Make([FromBody] string d)
         {
 
             try
             {
-                var data = d.RootElement;
-                var entryId = data.GetProperty("entryId").GetInt32();
-                var amount = data.GetProperty("amount").GetDecimal();
-                var id = data.GetProperty("id").GetInt32();
+                using JsonDocument doc = JsonDocument.Parse(d);
+                var data = doc.RootElement;
+                int entryId = data.GetProperty("entryId").GetInt32();
+                decimal amount = data.GetProperty("amount").GetDecimal();
+                int id = data.GetProperty("id").GetInt32();
+
+                bool conv = false;
+                decimal Income = 0;
+                int Id = 0;
+
+
+                if (amount < 0)
+                {
+                    return Json(new { success = false, message = "Amount cannot be negative." });
+                }
+
+                // Call the Amend_Cost method
                 MYSQLAccess.Amend_Cost(entryId, amount);
+
+
+
 
                 KeyValuePair<decimal, decimal> dataBack = fnCalcNetIncome(id);
 
@@ -109,15 +126,16 @@ namespace MVCBudget.Controllers
 
 
         [HttpPost]
-        public JsonResult Income_Amend([FromBody] JsonDocument d)
+        public JsonResult Income_Amend([FromBody] string d)
         {
 
             try
             {
-                var data = d.RootElement;
+                using JsonDocument doc = JsonDocument.Parse(d);
+                var data = doc.RootElement;
                 var entryId = data.GetProperty("entryId").ToString();
                 var amount = data.GetProperty("amount").ToString();
-                var desc = data.GetProperty("description").ToString();
+             
 
                 bool conv = false;
                 decimal Income = 0;
@@ -141,9 +159,9 @@ namespace MVCBudget.Controllers
 
                 return Json(new { Income = Income, Costs = dataBack.Value });
             }
-            catch
+            catch (Exception e)        
             {
-                return Json(new { success = true, message = "Entry saved successfully" });
+                return Json( e.ToJson() );
             }
         }
 
