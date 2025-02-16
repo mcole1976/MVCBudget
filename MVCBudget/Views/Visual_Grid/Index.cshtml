@@ -243,7 +243,8 @@
 
         const url = '/Visual_Grid/Income_Amend';
         const type = 'POST';
-        const data = { entryId, amount };
+        const data = JSON.stringify({ entryId, amount });
+        console.log(JSON.stringify({ entryId, amount }));
 
         try 
         {

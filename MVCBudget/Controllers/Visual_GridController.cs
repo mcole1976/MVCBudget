@@ -123,19 +123,25 @@ namespace MVCBudget.Controllers
                 return Json(new { success = true, message = "Entry saved successfully" });
             }
         }
-
+        public class IncomeAmendRequest
+        {
+            public string EntryId { get; set; }
+            public string Amount { get; set; }
+        }
 
         [HttpPost]
-        public JsonResult Income_Amend([FromBody] string d)
+        public JsonResult Income_Amend([FromBody] IncomeAmendRequest request)
         {
 
             try
             {
-                using JsonDocument doc = JsonDocument.Parse(d);
-                var data = doc.RootElement;
-                var entryId = data.GetProperty("entryId").ToString();
-                var amount = data.GetProperty("amount").ToString();
-             
+                //using JsonDocument doc = JsonDocument.Parse(d);
+                //var data = doc.RootElement;
+                var entryId = request.EntryId;
+                //data.GetProperty("entryId").ToString();
+                var amount = request.Amount;
+                //data.GetProperty("amount").ToString();
+
 
                 bool conv = false;
                 decimal Income = 0;

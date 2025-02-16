@@ -380,7 +380,7 @@ namespace MVCBudget.Service
             {
                 using var connection = new MySqlConnection(_connectionString);
                 connection.Open();
-                using var command = new MySqlCommand("Amend_Income", connection);
+                using var command = new MySqlCommand("Amend_Income_Period_Date", connection);
                 command.CommandType = System.Data.CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@P_Income", income);
                 command.Parameters.AddWithValue("@P_Id", entryId);
