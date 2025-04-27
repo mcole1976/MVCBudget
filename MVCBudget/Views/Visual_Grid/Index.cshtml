@@ -9,6 +9,10 @@
         hasData = true; 
     }
 }
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
+<script type="text/javascript" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+<script src="~/js/visual_grid.js"></script>
 <style>
      #dataTable th:nth-child(1), #dataTable td:nth-child(1) { /* Entry ID */
         display: none;
@@ -36,37 +40,78 @@
 {
     <div class="form-group">
         <label asp-for="Selected" class="control-label"></label>
-        <select asp-for="Selected" id ="incomeDropdown" class="form-control" asp-items="@(new SelectList(Model.Income_Lots, "Key", "Value"))"></select>
+        <select asp-for="Selected" 
+        id ="incomeDropdown" 
+        class="form-control" 
+        asp-items="@(new SelectList(Model.Income_Lots, "Key", "Value"))"
+        data-change-url="@Url.Action("Change", "Visual_Grid")"
+        data-index-url="@Url.Action("Index", "Visual_Grid")">
+    
+    </select>
         <span asp-validation-for="Selected" class="text-danger"></span>
         <br />
         @* <input type="submit" value="Show Values" /> *@
     </div>
 }
 <br />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
-<script type="text/javascript" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
 
 <script type="text/javascript">
-      var dropdownChanged = false;
+        //   document.addEventListener('DOMContentLoaded', function() {
+        // const incomeDropdown = document.getElementById('incomeDropdown');
+        // let dropdownChanged = false;
 
-    $(document).ready(function () 
+        // // Function to handle data fetching
+        // function fetchData() {
+        //     const selectedValue = incomeDropdown.value;
+        //     const url = `/Visual_Grid/Change?Selected=${encodeURIComponent(selectedValue)}`;
+
+        //     fetch(url)
+        //         .then(response => {
+        //             if (!response.ok) throw new Error('Network response was not ok');
+        //             return response.json();
+        //         })
+        //         .then(data => {
+        //             console.log("Received data:", data);
+        //             if (data.Message && data.Message === "No data found") {
+        //                 window.location.href = '/Visual_Grid/Index';
+        //             } else {
+        //                 updateTable(data);
+        //             }
+        //         })
+        //         .catch(error => console.log("Error:", error));
+        // }
+
+    //     if (incomeDropdown) {
+    //         // Run on initial page load
+    //         fetchData();
+
+    //         // Also run when dropdown changes
+    //         incomeDropdown.addEventListener('change', function() {
+    //             dropdownChanged = true;
+    //             fetchData();
+    //         });
+    //     }
+    // });
+      
+      
+      
+      $(document).ready(function () 
        
        { 
-           $('#incomeDropdown').change(function () { 
-               dropdownChanged = true;
-               var selectedValue = $(this).val(); 
+        //    $('#incomeDropdown').change(function () { 
+        //        dropdownChanged = true;
+        //        var selectedValue = $(this).val(); 
     
-            // Check if a value is selected
-            $.ajax({ url: '@Url.Action("Change", "Visual_Grid")', 
-            type: 'GET', 
-            data: { Selected: selectedValue }, 
-            success: function (data) { console.log("Received data:", data); 
-            if (data.Message && data.Message === "No data found")
-            { window.location.href = '@Url.Action("Index", "Visual_Grid")'; } 
-            else
-            { updateTable(data); } }, error: function (error) { console.log("Error:", error); } });  
-        }); 
+        //     // Check if a value is selected
+        //     $.ajax({ url: '@Url.Action("Change", "Visual_Grid")', 
+        //     type: 'GET', 
+        //     data: { Selected: selectedValue }, 
+        //     success: function (data) { console.log("Received data:", data); 
+        //     if (data.Message && data.Message === "No data found")
+        //     { window.location.href = '@Url.Action("Index", "Visual_Grid")'; } 
+        //     else
+        //     { updateTable(data); } }, error: function (error) { console.log("Error:", error); } });  
+        // }); 
 
         $(document).on('click', '.saveButton', 
         function() 

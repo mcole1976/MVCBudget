@@ -53,7 +53,7 @@ namespace MVCBudget.Controllers
             {
                 return RedirectToAction(nameof(Index));
             }
-            return RedirectToAction();
+            return RedirectToAction("Index");
         }
 
         // GET: EntryDateController1/Edit/5
