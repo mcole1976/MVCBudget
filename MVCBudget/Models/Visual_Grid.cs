@@ -36,23 +36,34 @@ namespace MVCBudget.Models
 
         public void SetSelected(int selected)
         {
+
+            List<Income_Lots> CheckList = Income.Where(i => i.Id == selected).ToList();
+
             Income = Income.Where(i => i.Id == selected).ToList();
-            bool check = false;
-            decimal dC;
-            var tc = (from f in Income select f.Amount).Sum().ToString();
-            check = decimal.TryParse(tc, out dC);
-            if (check) { Total_costs = dC; }
 
-            var dec = (from f in Income where f.Id == selected select f.Income).FirstOrDefault().ToString();
-            check = false;
-            dC = -1;
-            bool t = decimal.TryParse(dec.ToString(), out dC);
-            if (t)
+            if (CheckList.Count > 0)
             {
-                Income_amount = dC;
-            }
+                bool check = false;
+                decimal dC;
+                var tc = (from f in Income select f.Amount).Sum().ToString();
+                check = decimal.TryParse(tc, out dC);
+                if (check) { Total_costs = dC; }
 
-            Net_income = Income_amount - Total_costs;
+                var dec = (from f in Income where f.Id == selected select f.Income).FirstOrDefault().ToString();
+                check = false;
+                dC = -1;
+                bool t = decimal.TryParse(dec.ToString(), out dC);
+                if (t)
+                {
+                    Income_amount = dC;
+                }
+
+                Net_income = Income_amount - Total_costs;
+            }
+            else
+            {
+                
+            }
 
         }
     }

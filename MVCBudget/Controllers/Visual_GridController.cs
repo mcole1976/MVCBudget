@@ -51,10 +51,7 @@ namespace MVCBudget.Controllers
                 resultSet = v.Income;
 
             }
-            if (resultSet.Count == 0)
-            { // Return a message indicating no data found
-                return Json(new { Message = "No data found" });
-            }
+            
             return Json(resultSet);
         }
 
@@ -91,15 +88,47 @@ namespace MVCBudget.Controllers
 
             try
             {
-                using JsonDocument doc = JsonDocument.Parse(d);
-                var data = doc.RootElement;
-                int entryId = data.GetProperty("entryId").GetInt32();
-                decimal amount = data.GetProperty("amount").GetDecimal();
-                int id = data.GetProperty("id").GetInt32();
+                
+                    using JsonDocument doc = JsonDocument.Parse(d);
+                    var data = doc.RootElement;
 
-                bool conv = false;
-                decimal Income = 0;
-                int Id = 0;
+                    if (!data.TryGetProperty("entryId", out var entryIdElement))
+                        throw new ArgumentException("Missing entryId property");
+
+                    if (!data.TryGetProperty("amount", out var amountElement))
+                        throw new ArgumentException("Missing amount property");
+
+                    if (!data.TryGetProperty("id", out var idElement))
+                        throw new ArgumentException("Missing id property");
+
+                    // Parse entryId
+                    int entryId = entryIdElement.ValueKind switch
+                    {
+                        JsonValueKind.String => int.Parse(entryIdElement.GetString()),
+                        JsonValueKind.Number => entryIdElement.GetInt32(),
+                        _ => throw new FormatException("Invalid entryId format")
+                    };
+
+                    // Parse amount
+                    decimal amount = amountElement.ValueKind switch
+                    {
+                        JsonValueKind.String => decimal.Parse(amountElement.GetString()),
+                        JsonValueKind.Number => amountElement.GetDecimal(),
+                        _ => throw new FormatException("Invalid amount format")
+                    };
+
+                    // Parse id
+                    int id = idElement.ValueKind switch
+                    {
+                        JsonValueKind.String => int.Parse(idElement.GetString()),
+                        JsonValueKind.Number => idElement.GetInt32(),
+                        _ => throw new FormatException("Invalid id format")
+                    };
+
+                    // Use the parsed values
+                    Console.WriteLine($"Entry: {entryId}, Amount: {amount}, ID: {id}");
+                    
+               
 
 
                 if (amount < 0)
@@ -180,11 +209,30 @@ namespace MVCBudget.Controllers
         [HttpPost]
         public JsonResult DeleteEntry([FromBody] JsonDocument d)
         { // Your delete logic here // Return a JSON response
-            var data = d.RootElement;
-            var entryId = data.GetProperty("entryId").GetInt32();
-            MYSQLAccess.DeleteCost(entryId);
+            try
+            {
+                var data = d.RootElement;
 
-            return Json(new { success = true, message = "Entry deleted successfully" });
+                // Safely handle both string and number entryId
+                int entryId;
+                if (data.TryGetProperty("entryId", out JsonElement idElement))
+                {
+                    entryId = idElement.ValueKind == JsonValueKind.String
+                        ? int.Parse(idElement.GetString())
+                        : idElement.GetInt32();
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Missing entryId" });
+                }
+
+                MYSQLAccess.DeleteCost(entryId);
+                return Json(new { success = true, message = "Entry deleted successfully" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Error: {ex.Message}" });
+            }
         }
 
 
