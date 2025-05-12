@@ -35,7 +35,7 @@ namespace MVCBudget.Controllers
                 if (ModelState.IsValid)
                 {
 
-                    Service.MYSQLAccess.InsertLedger(model);
+                    Service.CostandIncomeService.InsertLedger(model);
                 }
 
             }

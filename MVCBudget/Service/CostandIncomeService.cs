@@ -3,7 +3,7 @@ using MySqlConnector;
 
 namespace MVCBudget.Service
 {
-    public static class MYSQLAccess
+    public static class CostandIncomeService
     {
         private static string _connectionString;
         public static string GetConnectionString() { return _connectionString; }

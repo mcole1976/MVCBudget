@@ -11,7 +11,7 @@ namespace MVCBudget.Controllers
         {
             var model = new Period_Tally
             {
-                Date = MYSQLAccess.GetDictionaryDatePeriodData(),
+                Date = CostandIncomeService.GetDictionaryDatePeriodData(),
 
                 Period_Data = fnSetData()
 
@@ -62,7 +62,7 @@ namespace MVCBudget.Controllers
                 }
 
                 model.Period_Data = periodData;
-                MYSQLAccess.InsertEntryWithIntermediate(model);
+                CostandIncomeService.InsertEntryWithIntermediate(model);
                 return RedirectToAction(nameof(Index));
             }
             catch

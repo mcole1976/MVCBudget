@@ -12,7 +12,7 @@ namespace MVCBudget.Controllers
             //return View();
             var model = new Income
             {
-                Dates = MYSQLAccess.GetDictionaryIncomeDateData(),
+                Dates = CostandIncomeService.GetDictionaryIncomeDateData(),
             };
 
 
@@ -43,7 +43,7 @@ namespace MVCBudget.Controllers
         {
             try
             {
-                Service.MYSQLAccess.InsertIncome(model);
+                Service.CostandIncomeService.InsertIncome(model);
                 return RedirectToAction(nameof(Index));
 
             }
@@ -87,7 +87,7 @@ namespace MVCBudget.Controllers
                 }
                 if (conv)
                 {
-                    MYSQLAccess.AmendIncome(entry_ID, income_total);
+                    CostandIncomeService.AmendIncome(entry_ID, income_total);
                     return RedirectToAction("Index", "Visual_Grid");
                 }
 
@@ -119,7 +119,7 @@ namespace MVCBudget.Controllers
                 bool conv = int.TryParse(entryId, out entry_ID);
                 if (conv)
                 {
-                    MYSQLAccess.DeleteIncome(entry_ID);
+                    CostandIncomeService.DeleteIncome(entry_ID);
                 }
                 return RedirectToAction("Index", "EntryDate");
             }

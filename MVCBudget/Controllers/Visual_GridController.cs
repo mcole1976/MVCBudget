@@ -11,8 +11,15 @@ namespace MVCBudget.Controllers
     {
         // GET: Visual_GridController
 
+        private readonly Service.Service _s;
+
+        public Visual_GridController(Service.Service srv)
+        {
+            _s = srv;
+        }
+
         [HttpPost]
-        public ActionResult Delete(IFormCollection collection)
+        public async Task<ActionResult> DeleteAsync(IFormCollection collection)
         {
             //var model = new Visual_Grid();
             string entryId = collection["item.Entry_id"].ToString();
@@ -24,7 +31,8 @@ namespace MVCBudget.Controllers
 
             if (conv)
             {
-                MYSQLAccess.DeleteCost(Id);
+                await _s.DeleteEntry(Id);
+                //CostandIncomeService.DeleteCost(Id);
             }
 
             return RedirectToAction(nameof(Index));
@@ -83,77 +91,119 @@ namespace MVCBudget.Controllers
 
         // POST: Visual_GridController/Create
         [HttpPost]
-        public JsonResult Make([FromBody] string d)
+        //public JsonResult Make([FromBody] string d)
+
+        public ActionResult<EntryResponse> Make([FromBody] UpdateRequest request)
+
         {
 
             try
             {
-                
-                    using JsonDocument doc = JsonDocument.Parse(d);
-                    var data = doc.RootElement;
 
-                    if (!data.TryGetProperty("entryId", out var entryIdElement))
-                        throw new ArgumentException("Missing entryId property");
-
-                    if (!data.TryGetProperty("amount", out var amountElement))
-                        throw new ArgumentException("Missing amount property");
-
-                    if (!data.TryGetProperty("id", out var idElement))
-                        throw new ArgumentException("Missing id property");
-
-                    // Parse entryId
-                    int entryId = entryIdElement.ValueKind switch
-                    {
-                        JsonValueKind.String => int.Parse(entryIdElement.GetString()),
-                        JsonValueKind.Number => entryIdElement.GetInt32(),
-                        _ => throw new FormatException("Invalid entryId format")
-                    };
-
-                    // Parse amount
-                    decimal amount = amountElement.ValueKind switch
-                    {
-                        JsonValueKind.String => decimal.Parse(amountElement.GetString()),
-                        JsonValueKind.Number => amountElement.GetDecimal(),
-                        _ => throw new FormatException("Invalid amount format")
-                    };
-
-                    // Parse id
-                    int id = idElement.ValueKind switch
-                    {
-                        JsonValueKind.String => int.Parse(idElement.GetString()),
-                        JsonValueKind.Number => idElement.GetInt32(),
-                        _ => throw new FormatException("Invalid id format")
-                    };
-
-                    // Use the parsed values
-                    Console.WriteLine($"Entry: {entryId}, Amount: {amount}, ID: {id}");
-                    
-               
-
-
-                if (amount < 0)
+                if (request == null)
                 {
-                    return Json(new { success = false, message = "Amount cannot be negative." });
+                    return BadRequest(new EntryResponse
+                    {
+                        Success = false,
+                        Message = "Invalid request data"
+                    });
                 }
 
-                // Call the Amend_Cost method
-                MYSQLAccess.Amend_Cost(entryId, amount);
+                if (request.Amount < 0)
+                {
+                    return BadRequest(new EntryResponse
+                    {
+                        Success = false,
+                        Message = "Amount cannot be negative."
+                    });
+                }
+
+
+
+                CostandIncomeService.Amend_Cost(request.EntryId, request.Amount);
+                //_costService.UpdateCost(request.EntryId, request.Amount);
+                var financialData = _s.MakeRetrunDataKVP(request.Id).Result;
+
+                return Ok(new EntryResponse
+                {
+                    Success = true,
+                    Message = "Entry saved successfully",
+                    Income = financialData.Key,
+                    Costs = financialData.Value
+                });
+
+
+                //using JsonDocument doc = JsonDocument.Parse(d);
+                //var data = doc.RootElement;
+
+                //if (!data.TryGetProperty("entryId", out var entryIdElement))
+                //    throw new ArgumentException("Missing entryId property");
+
+                //if (!data.TryGetProperty("amount", out var amountElement))
+                //    throw new ArgumentException("Missing amount property");
+
+                //if (!data.TryGetProperty("id", out var idElement))
+                //    throw new ArgumentException("Missing id property");
+
+                //// Parse entryId
+                //int entryId = entryIdElement.ValueKind switch
+                //{
+                //    JsonValueKind.String => int.Parse(entryIdElement.GetString()),
+                //    JsonValueKind.Number => entryIdElement.GetInt32(),
+                //    _ => throw new FormatException("Invalid entryId format")
+                //};
+
+                //// Parse amount
+                //decimal amount = amountElement.ValueKind switch
+                //{
+                //    JsonValueKind.String => decimal.Parse(amountElement.GetString()),
+                //    JsonValueKind.Number => amountElement.GetDecimal(),
+                //    _ => throw new FormatException("Invalid amount format")
+                //};
+
+                //// Parse id
+                //int id = idElement.ValueKind switch
+                //{
+                //    JsonValueKind.String => int.Parse(idElement.GetString()),
+                //    JsonValueKind.Number => idElement.GetInt32(),
+                //    _ => throw new FormatException("Invalid id format")
+                //};
+
+                //// Use the parsed values
+                //Console.WriteLine($"Entry: {entryId}, Amount: {amount}, ID: {id}");
 
 
 
 
-                KeyValuePair<decimal, decimal> dataBack = fnCalcNetIncome(id);
+                //if (amount < 0)
+                //{
+                //    return Json(new { success = false, message = "Amount cannot be negative." });
+                //}
 
-                return Json(new { Income = dataBack.Key, Costs = dataBack.Value });
+                //// Call the Amend_Cost method
+                ////CostandIncomeService.Amend_Cost(entryId, amount);
+
+
+
+
+                //KeyValuePair<decimal, decimal> dataBack = fnCalcNetIncome(id);
+
+                //return Json(new { Income = dataBack.Key, Costs = dataBack.Value });
 
             }
             catch
             {
-                return Json(new { success = true, message = "Entry saved successfully" });
+                return StatusCode(500, new EntryResponse
+                {
+                    Success = false,
+                    Message = "An error occurred while processing your request"
+                });
             }
         }
         public class IncomeAmendRequest
         {
+            private string _entry_Id;
+            private string _amount;
             public string EntryId { get; set; }
             public string Amount { get; set; }
         }
@@ -184,13 +234,13 @@ namespace MVCBudget.Controllers
                 if (Income > -1)
                 {
 
-                    MYSQLAccess.AmendIncome(Id, Income);
+                    CostandIncomeService.AmendIncome(Id, Income);
                 }
                 else
                 {
 
                 }
-                KeyValuePair<decimal, decimal> dataBack = fnCalcNetIncome(Id);
+                KeyValuePair<decimal, decimal> dataBack = _s.MakeRetrunDataKVP(Id).Result;
 
                 return Json(new { Income = Income, Costs = dataBack.Value });
             }
@@ -200,11 +250,6 @@ namespace MVCBudget.Controllers
             }
         }
 
-        private KeyValuePair<decimal, decimal> fnCalcNetIncome(int id)
-        {
-            KeyValuePair<decimal, decimal> r = MYSQLAccess.MakeRetrunDataKVP(id); ;
-            return r;
-        }
 
         [HttpPost]
         public JsonResult DeleteEntry([FromBody] JsonDocument d)
@@ -226,7 +271,7 @@ namespace MVCBudget.Controllers
                     return Json(new { success = false, message = "Missing entryId" });
                 }
 
-                MYSQLAccess.DeleteCost(entryId);
+                CostandIncomeService.DeleteCost(entryId);
                 return Json(new { success = true, message = "Entry deleted successfully" });
             }
             catch (Exception ex)
@@ -261,10 +306,10 @@ namespace MVCBudget.Controllers
                 {
 
                     var entry = Tuple.Create(Id, desc, cost);
-                    MYSQLAccess.InsertEntryWithIntermediate(entry);
+                    CostandIncomeService.InsertEntryWithIntermediate(entry);
                 }
 
-                KeyValuePair<decimal, decimal> dataBack = fnCalcNetIncome(Id);
+                KeyValuePair<decimal, decimal> dataBack = _s.MakeRetrunDataKVP(Id).Result;
 
                 return Json(new { Income = dataBack.Key, Costs = dataBack.Value });
             }
@@ -292,7 +337,7 @@ namespace MVCBudget.Controllers
                 }
 
                 model.Period_Data = periodData;
-                MYSQLAccess.InsertEntryWithIntermediate(model);
+                CostandIncomeService.InsertEntryWithIntermediate(model);
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -328,7 +373,7 @@ namespace MVCBudget.Controllers
                 }
                 if (conv && cost > -1)
                 {
-                    MYSQLAccess.Amend_Cost(Id, cost);
+                    CostandIncomeService.Amend_Cost(Id, cost);
                 }
                 else
                 {

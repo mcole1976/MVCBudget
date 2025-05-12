@@ -70,7 +70,7 @@ namespace MVCBudget.Controllers
                 }
                 if (conv)
                 {
-                    MYSQLAccess.AmendIncome(entry_ID, income_total);
+                    CostandIncomeService.AmendIncome(entry_ID, income_total);
                     return RedirectToAction("Index", "EntryDate");
                 }
 

@@ -245,14 +245,25 @@ async function saveIncome(entryId, amount) {
 async function saveEntry(entryId, amount, id)
  {
      const url = '/Visual_Grid/Make';
-     const type = 'POST';
-     const data = JSON.stringify({ entryId: entryId, amount: amount, id: id });
+    const type = 'POST';
 
-     console.log('Data:', { entryId: entryId, amount: amount });
+
+    const payload = {
+        entryId: entryId,
+        amount: amount,
+        id: id
+    };
+
+    console.log('Sending data:', payload);
 
      try
      {
-         const response = await makeAjaxCall(url, type, JSON.stringify(data));
+         //const data = JSON.stringify({ entryId: entryId, amount: amount, id: id });
+
+         //console.log('Data:', { entryId: entryId, amount: amount });
+
+
+         const response = await makeAjaxCall(url, type, JSON.stringify(payload));
          console.log('Entry saved successfully:', response);
           // Ensure this runs only after the response is received
      }

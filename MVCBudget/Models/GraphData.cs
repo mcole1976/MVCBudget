@@ -14,8 +14,8 @@ namespace MVCBudget.Models
 
         public void setData()
         {
-            incomeKVPs = MYSQLAccess.SetIncomeKVP();
-            exepenceKVPs = MYSQLAccess.SetExpenceKVP();
+            incomeKVPs = CostandIncomeService.SetIncomeKVP();
+            exepenceKVPs = CostandIncomeService.SetExpenceKVP();
 
         }
     }

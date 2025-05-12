@@ -10,14 +10,14 @@ namespace MVCBudget.Controllers
         public ActionResult Index()
         {
             var previousEntries = new List<IncomeTotals>();
-            previousEntries = MYSQLAccess.GetDictionaryDataDateDesc();
+            previousEntries = CostandIncomeService.GetDictionaryDataDateDesc();
 
             var orderedEntries = previousEntries.OrderBy(entry => entry.Description_time).ToList();
 
             var model = new EntryDate
             {
                 DateOnly = DateOnly.FromDateTime(DateTime.Today),
-                Period = MYSQLAccess.GetDictionaryData(),
+                Period = CostandIncomeService.GetDictionaryData(),
                 PreviousEntries = orderedEntries
             };
             return View(model);
@@ -45,7 +45,7 @@ namespace MVCBudget.Controllers
 
 
                 var entryDate = new EntryDate();
-                Service.MYSQLAccess.InsertPeriaod_and_Date(model);
+                Service.CostandIncomeService.InsertPeriaod_and_Date(model);
 
 
             }

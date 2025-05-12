@@ -8,6 +8,11 @@ namespace MVCBudget.Models
         private decimal _income_amount;
         private decimal _total_costs;
         private decimal _net_income;
+
+        private Service.Service _s;
+
+        public Service.Service S { get => _s; set => _s = value; }
+
         public List<KeyValuePair<int, DateOnly>> Income_Lots { get; private set; }
         public List<Income_Lots> Income { get; private set; }
         public int Selected { get => _selected; set => _selected = value; }
@@ -21,22 +26,17 @@ namespace MVCBudget.Models
             Income_Lots = new List<KeyValuePair<int, DateOnly>>();
             Income = new List<Income_Lots>();
 
+            // Initialize the non-nullable field '_s' with a default instance
+            _s = new Service.Service();
+            Income_Lots = S.GetMontlyIncome().Result;
+            Income = S.GetIncomeLotsData().Result;
             // Populate properties with data from the database
-            PopulateFromDatabase();
+            //PopulateFromDatabase();
         }
 
-        private void PopulateFromDatabase()
-        {
-            Income_Lots = MYSQLAccess.GetMontlyIncome();
-            Income = MYSQLAccess.GetIncomeLotsData();
-
-
-
-        }
-
+       
         public void SetSelected(int selected)
         {
-
             List<Income_Lots> CheckList = Income.Where(i => i.Id == selected).ToList();
 
             Income = Income.Where(i => i.Id == selected).ToList();
@@ -60,11 +60,6 @@ namespace MVCBudget.Models
 
                 Net_income = Income_amount - Total_costs;
             }
-            else
-            {
-                
-            }
-
         }
     }
 }
