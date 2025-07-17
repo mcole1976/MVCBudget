@@ -1,4 +1,5 @@
-﻿using MVCBudget.Models;
+﻿using System.Reflection.Metadata.Ecma335;
+using MVCBudget.Models;
 using MySqlConnector;
 namespace MVCBudget.Service
 {
@@ -113,6 +114,29 @@ namespace MVCBudget.Service
             }
 
             return res;
+        }
+
+
+        public async Task<List<String>> GetEntryPossibles(int Id)
+        {
+            var entries = new List<string>();
+            using var connection = new MySqlConnection(_connectionString);
+            connection.Open();
+            using var command = new MySqlCommand("Get_Description_Data", connection);
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+            command.Parameters.AddWithValue("@PI_ID", Id);
+            using var readerTask = command.ExecuteReaderAsync();
+            var reader = readerTask.Result; // Await the task to get the actual reader
+            while (reader.Read()) // Use the reader object directly
+            {
+                string x = "new Entry";
+                {
+                    x = reader.GetString(0);
+                }
+                ;
+                entries.Add(x);
+            }
+            return entries;
         }
 
     }

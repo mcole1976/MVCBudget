@@ -63,7 +63,14 @@ namespace MVCBudget.Controllers
             return Json(resultSet);
         }
 
-
+        [HttpGet]
+        public ActionResult DetailList(int ID)
+        {
+            // Retrieve model based on the selected ID
+            List<string> resultSet = new();
+            
+            return View(resultSet);
+        }
 
 
         [HttpPost]
@@ -76,6 +83,26 @@ namespace MVCBudget.Controllers
             v.SetSelected(v.Selected);
             return View("Index", v);
         }
+
+
+        [HttpGet]
+        public async Task<JsonResult> GetPossibles(int id)
+        {
+            try
+            {
+
+                var s = new Service.Service();
+                var possibles = await s.GetEntryPossibles(id);
+                return Json(possibles);
+            }
+            catch (Exception ex)
+            {
+                // Log the error
+                return Json(new List<string>());
+            }
+        }
+
+
 
         // GET: Visual_GridController/Details/5
         public ActionResult Details(int id)

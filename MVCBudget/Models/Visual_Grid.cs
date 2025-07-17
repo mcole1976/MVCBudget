@@ -15,6 +15,9 @@ namespace MVCBudget.Models
 
         public List<KeyValuePair<int, DateOnly>> Income_Lots { get; private set; }
         public List<Income_Lots> Income { get; private set; }
+
+        
+        public List<string> Possibles { get; private set; } = new List<string>();
         public int Selected { get => _selected; set => _selected = value; }
         public decimal Income_amount { get => _income_amount; set => _income_amount = value; }
         public decimal Total_costs { get => _total_costs; set => _total_costs = value; }
@@ -25,21 +28,31 @@ namespace MVCBudget.Models
             // Initialize the properties
             Income_Lots = new List<KeyValuePair<int, DateOnly>>();
             Income = new List<Income_Lots>();
+            Possibles = new List<string>();
 
             // Initialize the non-nullable field '_s' with a default instance
             _s = new Service.Service();
             Income_Lots = S.GetMontlyIncome().Result;
             Income = S.GetIncomeLotsData().Result;
+  
+
             // Populate properties with data from the database
             //PopulateFromDatabase();
         }
 
        
-        public void SetSelected(int selected)
+ public void SetSelected(int selected)
         {
             List<Income_Lots> CheckList = Income.Where(i => i.Id == selected).ToList();
 
             Income = Income.Where(i => i.Id == selected).ToList();
+
+            // Await the task to resolve the CS0029 error
+            Task<List<string>> task = S.GetEntryPossibles(selected);
+            Possibles = task.Result; // Use .Result to get the result of the Task
+
+            // Fix the CS1002 error by completing the statement with a semicolon
+            // Possibles is already assigned above, so no additional code is needed here
 
             if (CheckList.Count > 0)
             {
