@@ -106,7 +106,7 @@ async function makeGrid() {
     try {
         const entryId = document.getElementById('incomeDropdown').value;
 //document.getElementById('hiddenID').textContent.trim();
-        const url = `/Visual_Grid/Change?Selected=${encodeURIComponent(entryId)}`;
+        const url = `/Visual_Grid/Change?id=${encodeURIComponent(entryId)}`;
 
         const response = await fetch(url);
 
@@ -128,6 +128,40 @@ async function makeGrid() {
         // Optional: Add user-facing error message
     }
 }
+async function makePrevGrid() {
+    try {
+        const entryId = document.getElementById('incomeDropdown').value;
+        //document.getElementById('hiddenID').textContent.trim();
+        const url = `/Visual_Grid/GetPossibles?Selected=${encodeURIComponent(entryId)}`;
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Received data:", data);
+
+        if (data.Message && data.Message === "No data found") {
+            window.location.href = '/Visual_Grid/Index';
+        } else {
+            updateTable(data);
+        }
+
+    } catch (error) {
+        console.error("Error in makeGrid:", error);
+        // Optional: Add user-facing error message
+    }
+}
+
+
+
+
+
+
+
+
 function fnSetVal(response) {
     document.getElementById('incomeInput').value = response.income;
     document.getElementById('costInput').value = response.costs;
@@ -314,8 +348,11 @@ function fnSetIncome() {
         });
 }
 
+
 document.addEventListener('DOMContentLoaded', function () {
     const incomeDropdown = document.getElementById('incomeDropdown');
+
+    // Initialize possibles functionality
 
     // 2. Define fetchData INSIDE this scope
     const fetchData = () => {
