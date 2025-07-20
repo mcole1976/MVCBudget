@@ -313,6 +313,9 @@ function updatePrevTable(data) {
 async function saveIncome(entryId, amount) {
     try {
         const response = await makeAjaxCall('/Visual_Grid/Income_Amend', 'POST', JSON.stringify({ entryId, amount }));
+        await makeGrid();
+        await makePrevGrid();
+        await fnSetIncome();
         console.log('Entry saved successfully:', response);
     } catch (error) {
         console.error('Error saving entry:', error);
@@ -322,6 +325,12 @@ async function saveIncome(entryId, amount) {
 async function saveEntry(entryId, amount, id) {
     try {
         const response = await makeAjaxCall('/Visual_Grid/Make', 'POST', JSON.stringify({ entryId, amount, id }));
+        await makeGrid();
+        await makePrevGrid();
+        await fnSetIncome();
+
+
+
         console.log('Entry saved successfully:', response);
     } catch (error) {
         console.error('Error saving entry:', error);
@@ -338,7 +347,7 @@ async function deleteEntry(entryId) {
             console.log('Entry deleted successfully:', response);
             await makeGrid();
             await makePrevGrid();
-            fnSetIncome();
+            await fnSetIncome();
         },
         error: function (error) {
             console.error('Error deleting entry:', error);
@@ -346,7 +355,7 @@ async function deleteEntry(entryId) {
     });
 }
 
-function fnSetIncome() {
+async function fnSetIncome() {
     const entryId = document.getElementById('hiddenID').innerHTML;
     const amount = $('#incomeInput').val();
     $.ajax({
@@ -396,7 +405,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (target.matches('.amend_I')) {
-            const entryId = document.getElementById('hiddenID').textContent;
+            const entryId = document.getElementById('incomeDropdown').value;
             const amount = document.getElementById('incomeInput').value;
             await saveIncome(entryId, amount);
         }
